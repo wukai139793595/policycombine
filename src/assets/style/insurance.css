@@ -1,0 +1,60 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
+    margin:0;
+    padding:0
+}
+html,body{
+    width: 100%;
+    height: 100%;
+}
+li{
+    list-style: none;
+}
+div.el-popper{
+    width: 500px;
+    height: 500px;
+}
+div.el-picker-panel__body-wrapper{
+    width: 500px;
+    height: 500px;    
+}
+div.el-picker-panel__body{
+    width: 500px;
+    height: 500px;     
+}
+.el-picker-panel__body-wrapper .el-picker-panel__body .el-picker-panel__content{
+    padding-top: 40px;
+    width: 480px;   
+    height: 450px;
+}
+span.el-input__prefix{
+    display: none;
+}
+.el-picker-panel__body-wrapper .el-date-table td span{
+    border-radius: 0;
+}
+
+/* 日历字体大小调整 */
+.el-picker-panel .el-picker-panel__body-wrapper .el-picker-panel__body .el-date-picker__header span{
+    font-size: 24px;
+}
+
+.el-picker-panel .el-picker-panel__body-wrapper .el-picker-panel__body .el-date-table div span{
+    font-size: 24px;
+}
+
+/* alert样式调整 */
+
+.el-message-box .el-message-box__header span{
+    font-size: 24px;
+}
+.el-message-box .el-message-box__close{
+    font-size: 24px;
+}
+
+.el-message-box .el-message-box__content p{
+    font-size: 26px;
+}
+.el-message-box .el-message-box__btns span {
+    font-size: 26px;
+}
+

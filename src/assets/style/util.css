@@ -1,0 +1,116 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
+    margin:0;
+    padding:0
+}
+html,body{
+    width: 100%;
+    height: 100%;
+}
+li{
+    list-style: none;
+}
+.icon-common{
+    width: 36px;
+    height: 36px;
+
+}
+/* .head{ */
+    /* width: 702px; */
+    /* height: 30px; */
+    /* margin: 0 auto; */
+    /* padding-top: 20px;
+    text-align: center;
+    position: relative;
+    line-height: 30px; */
+
+/* } */
+/* .head .turn-back{
+    position: absolute;
+    left: 0px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+
+}
+.head .title{
+    display: inline-block;
+    font-size: 30px;
+}
+.head .turn-back   img{
+    width: 100%;
+    height: 100%;
+}  */
+
+
+/* 日历样式改写 */
+div.el-popper{
+    width: 500px;
+    height: 500px;
+}
+div.el-picker-panel__body-wrapper{
+    width: 500px;
+    height: 500px;    
+}
+div.el-picker-panel__body{
+    width: 500px;
+    height: 500px;     
+}
+.el-picker-panel__body-wrapper .el-picker-panel__body .el-picker-panel__content{
+    padding-top: 40px;
+    width: 480px;   
+    height: 450px;
+}
+span.el-input__prefix{
+    display: none;
+}
+.el-picker-panel__body-wrapper .el-date-table td span{
+    border-radius: 0;
+}
+.el-date-editor .el-input__inner{
+    margin-left: 0;
+    font-size: 28px;
+}
+/* 下拉框样式改写 */
+.el-scrollbar__view .el-select-dropdown__item{
+    margin: 10px 0;
+}
+.el-scrollbar__view .el-select-dropdown__item span{
+    font-size: 30px;
+}
+
+/* 日历字体大小调整 */
+.el-picker-panel .el-picker-panel__body-wrapper .el-picker-panel__body .el-date-picker__header span{
+    font-size: 24px;
+}
+
+.el-picker-panel .el-picker-panel__body-wrapper .el-picker-panel__body .el-date-table div span{
+    font-size: 24px;
+}
+
+/* alert样式调整 */
+
+.el-message-box .el-message-box__header span{
+    font-size: 24px;
+}
+.el-message-box .el-message-box__close{
+    font-size: 24px;
+}
+
+.el-message-box .el-message-box__content p{
+    font-size: 26px;
+}
+.el-message-box .el-message-box__btns span {
+    font-size: 26px;
+}
+
+
+/* 单选框 */
+.el-radio .el-radio__label{
+    font-size: 28px;
+}
+
+.el-radio .el-radio__inner{
+    width: 30px;
+    height: 30px;
+}
+
