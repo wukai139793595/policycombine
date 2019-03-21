@@ -182,7 +182,7 @@ export default {
             }
             this.$store.commit('changeMoney', this.totalMoney);
             this.$router.push({
-                path: '/writeInfo',
+                path: '/insurance/writeInfo',
                 query: {
                     oneCost: this.$route.query.oneCost,
                     groupId: this.$route.query.groupId,
