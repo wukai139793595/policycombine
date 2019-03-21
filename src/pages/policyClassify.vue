@@ -336,7 +336,7 @@ export default {
         bottom: 0;
         background-color: transparent;
         .content{
-            position: absolute;
+            position: fixed;
             top: 80px;
             left: 80px;
             right:80px;
