@@ -54,7 +54,7 @@
                     <img src="../assets/icon/close.png" alt="" @click="hideProtocols($event)">
                 </div>
                 <div class="word-wrap">
-
+                    <iframe src="https://g.yunbisai.com/file/ins-p.html" frameborder="0"></iframe>
                 </div>
             </div>
         </div>
@@ -334,7 +334,7 @@ export default {
         }
     }
     .protocols-detail{
-        position: fixed;
+        position: absolute;
         top: 0;
         left: 0;
         right: 0;
@@ -360,8 +360,17 @@ export default {
                 }
             }
             .word-wrap{
-                width: 100%;
+                position: absolute;
+                top: 80px;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
                 background-color: #fff;
+                iframe{
+                    width: 100%;
+                    height: 100%;
+                    box-shadow: 0 0 6px #aaa;
+                }
             }
 
         }
