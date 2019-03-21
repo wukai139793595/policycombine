@@ -99,7 +99,7 @@
                 </div> -->
                 <div class="bank-wrap">
                     <div class="bank-left">
-                        <img class="pay-icon" src="../../assets/icon/bank.png" alt="">
+                        <img class="pay-icon" src="@/assets/icon/ali.png" alt="">
                         <div class="name-wrap">
                             <div class="name">建行支付宝</div>
                             
@@ -107,21 +107,21 @@
                         </div>
                     </div>
                     <div class="bank-right" @click="changePayWay($event, 'aliChoose')">
-                        <img src="../../assets/icon/choose-circle.png" alt="" class="icon-common" v-if="chooseWay === 'aliChoose'">
-                        <img src="../../assets/icon/circle.png" alt="" class="icon-common" v-else>                        
+                        <img src="@/assets/icon/choose-circle.png" alt="" class="icon-common" v-if="chooseWay === 'aliChoose'">
+                        <img src="@/assets/icon/circle.png" alt="" class="icon-common" v-else>                        
                     </div>
                 </div>
                 <div class="bank-wrap">
                     <div class="bank-left">
-                        <img class="pay-icon" src="../../assets/icon/bank.png" alt="">
+                        <img class="pay-icon" src="@/assets/icon/wx.png" alt="">
                         <div class="name-wrap">
                             <div class="name">建行微信</div>
                             <!-- <div class="bank-number">储蓄卡<span>(3365)</span></div> -->
                         </div>
                     </div>
                     <div class="bank-right" @click="changePayWay($event, 'wxChoose')">
-                        <img src="../../assets/icon/choose-circle.png" alt="" class="icon-common" v-if="chooseWay === 'wxChoose'">
-                        <img src="../../assets/icon/circle.png" alt="" class="icon-common" v-else>                        
+                        <img src="@/assets/icon/choose-circle.png" alt="" class="icon-common" v-if="chooseWay === 'wxChoose'">
+                        <img src="@/assets/icon/circle.png" alt="" class="icon-common" v-else>                        
                     </div>
                 </div>
             </div>
@@ -141,15 +141,14 @@
                 :chooseWay = 'chooseWay'
                 :orderId = 'orderId'
             />
-        </div>
-            
+        </div>  
     </div>
 </template>
 
 <script>
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
-import {postCancelOrder} from '@/api/api.js'
+import {postCancelOrder,postCcbPay} from '@/api/api.js'
     export default {
         data () {
             return {
@@ -249,11 +248,36 @@ import {postCancelOrder} from '@/api/api.js'
                             type: 'success',
                             message:'订单取消成功'
                         })
+                        this.$router.go(-1);
                     } else {
                         this.$message.error(res.data.msg)
                     }
                 }, err => {
                     this.$message.error('网络错误')
+                })
+            },
+            submit (event) {
+                let tempWap = '';
+                if (this.chooseWay === 'aliChoose') {
+                    tempWap = 'ali'
+                } else if(this.chooseWay === 'wxChoose') {
+                    tempWap = 'wx'
+                }
+                postCcbPay({
+                    ssid: this.ssid,
+                    orderid: this.orderId,
+                    type: 16,
+                    paytype: tempWap                     
+                }).then(res => {
+                    if (res.data.error === 0) {
+                        this.qr_code = res.data.datArr.qr_code;
+                        this.amount = res.data.datArr.amount;
+                        this.readyPay = true;
+                    } else {
+                        this.$message.error(res.data.msg)
+                    }
+                }, err => {
+
                 })
             }
             // infoChange () {   //内容改变事件函数

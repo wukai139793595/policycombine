@@ -2,7 +2,7 @@
     <div class="insurance">
         <div class="head">
             <div class="turn-back">
-                <img src="../assets/icon/left-direction.png" alt="">
+                <img src="../assets/icon/left-direction.png" alt="" @click="turnBack($event)">
             </div>
             <div class="title">
                 保单管理
@@ -83,6 +83,7 @@ import Scroll from '@/components/scroll.vue'
 import personInfo from '@/components/personInfo.vue'
 import Vue from 'vue'
 import {postQueryPolicy,postPolicyCancel} from '@/api/insurance.js'
+import {GetUrlParam} from '@/util/index.js'
 export default {
     data () {
         return {
@@ -156,7 +157,6 @@ export default {
         initData () {
             //按页数进行查保
             this.isClock = true;
-            console.log(111)
             postQueryPolicy({
                 // org_id: '32',         //
                 // entrance: 1,
@@ -165,7 +165,8 @@ export default {
                 end_time: this.endTime,
                 state: this.state,
                 page: this.page,
-                limit: this.limit
+                limit: this.limit,
+                group_id: this.groupId || ""
             })
             .then((res) => {
                 console.log(res)
@@ -215,7 +216,10 @@ export default {
         toSearch (event) {
             console.log(event)
             this.$router.push({
-                path: '/search'
+                path: '/search',
+                query: {
+                    groupId: this.groupId || ""
+                }
             });
         },
         selectShow (event) {
@@ -239,11 +243,18 @@ export default {
             this.isShow = false;
             this.refresh();
 
+        },
+        //返回页面
+        turnBack (event) {
+            this.$router.go(-1);
         }
     },
     created () {
         this.today = Date.now();
         this.ssid = this.$cookie.get('ssid');
+        // this.groupId = GetUrlParam("groupId").split('#')[0];
+        this.groupId = sessionStorage.getItem('insuranceGroupId');
+        console.log(this.groupId)
         this.initData();
     }
 }

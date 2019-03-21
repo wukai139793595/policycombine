@@ -22,7 +22,7 @@
             <span>保险金额:</span>
             <span>{{real_amount | divisionHundred}}元</span>
         </div>
-        <div class="surrender-normal" :class="{surrender:(state === 2)}" @click="toSurrender($event)">
+        <div class="surrender-normal" :class="{surrender:(state == 2)}" @click="toSurrender($event)">
             退保
         </div>       
     </div>
@@ -37,7 +37,7 @@ import {postPolicyCancel} from '@/api/insurance.js'
                 default: '' 
             },
             state: {
-                type: Number,
+                type: String,
                 default: 0
             },
             title: {
@@ -57,7 +57,7 @@ import {postPolicyCancel} from '@/api/insurance.js'
                 default: ''
             },
             real_amount: {
-                type: Number,
+                type: String,
                 default: 0
             },
             order_id: {

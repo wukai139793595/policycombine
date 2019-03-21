@@ -11,21 +11,21 @@
             <p>请设置保险起止时间</p>
             <div class="time-wrap">
                 <el-date-picker
-                    @change="infoChange"
+                    @change="infoChange($event, 'startTime')"
                     class="data-picker"
-                    v-model="startTime"
+                    v-model="submitInfoObj.startTime"
                     type="date"
-                    :placeholder="today|moment('YYYY-MM-DD')"
+                    :placeholder="tomorrow|moment('YYYY-MM-DD')"
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd">
                 </el-date-picker>
                 <div class="striping"></div>
                 <el-date-picker
-                    @change="infoChange"
+                    @change="infoChange($event, 'endTime')"
                     class="data-picker"
-                    v-model="endTime"
+                    v-model="submitInfoObj.endTime"
                     type="date"
-                    :placeholder="today|moment('YYYY-MM-DD')"
+                    :placeholder="tomorrow|moment('YYYY-MM-DD')"
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd">
                 </el-date-picker>
@@ -36,11 +36,11 @@
             <div class="info-content">               
                 <div class="name-wrap">
                     <span class="name">姓名</span>
-                    <input type="text" placeholder="输入投保人姓名" @input="infoChange" v-model="name" >
+                    <input type="text" placeholder="输入投保人姓名" @input="infoInput($event)" v-model="submitInfoObj.name" ref="inputName" maxlength="20">
                 </div>
                 <div class="identify-wrap">
                     <span class="name">证件类型</span>
-                      <el-select v-model="selectCertificate" placeholder="请选择" @change="infoChange">
+                      <el-select v-model="submitInfoObj.selectCertificate" placeholder="请选择" @change="infoChange($event, 'selectCertificate')">
                         <el-option
                         v-for="item in certificateArr"
                         :key="item.num"
@@ -51,20 +51,20 @@
                 </div>
                 <div class="name-wrap">
                     <span class="name">证件号</span>
-                    <input type="text" placeholder="输入投保人身份证" @input="infoChange" v-model="certificateValue">
+                    <input type="text" placeholder="输入投保人身份证" @input="infoInput($event)" v-model="submitInfoObj.certificateValue" ref="inputCertificate">
                 </div>
                 <div class="sex-wrap">
                     <span class="name">性别</span>
-                    <el-radio v-model="sex" label="0">男</el-radio>
-                    <el-radio v-model="sex" label="1">女</el-radio>                    
+                    <el-radio v-model="submitInfoObj.sex" label="0" @change="infoChange($event, 'sex')">男</el-radio>
+                    <el-radio v-model="submitInfoObj.sex" label="1" @change="infoChange($event, 'sex')">女</el-radio>                    
                 </div>
                 <div class="phone-wrap">
                     <span class="name">电话</span>
-                    <input type="text" placeholder="输入投保人电话" @input="infoChange" v-model="phone">
+                    <input type="text" placeholder="输入投保人电话" @input="infoInput($event)" v-model="submitInfoObj.phone" ref="inputPhone">
                 </div>
                 <div class="email-wrap">
                     <span class="name">邮箱</span>
-                    <input type="text" placeholder="输入投保人邮箱" @input="infoChange" v-model="email"> 
+                    <input type="text" placeholder="输入投保人邮箱" @input="infoInput($event)" v-model="submitInfoObj.email" ref='inputEmail'> 
                 </div>
                 
                 <!-- <div class="relative-wrap">
@@ -98,7 +98,7 @@
                 </div> -->
                 <div class="bank-wrap">
                     <div class="bank-left">
-                        <img class="pay-icon" src="../assets/icon/bank.png" alt="">
+                        <img class="pay-icon" src="@/assets/icon/ali.png" alt="">
                         <div class="name-wrap">
                             <div class="name">建行支付宝</div>
                             
@@ -106,20 +106,20 @@
                         </div>
                     </div>
                     <div class="bank-right" @click="changePayWay($event, 'aliChoose')">
-                        <img src="../assets/icon/choose-circle.png" alt="" class="icon-common" v-if="chooseWay === 'aliChoose'">
+                        <img src="../assets/icon/choose-circle.png" alt="" class="icon-common" v-if="submitInfoObj.chooseWay === 'aliChoose'">
                         <img src="../assets/icon/circle.png" alt="" class="icon-common" v-else>                        
                     </div>
                 </div>
                 <div class="bank-wrap">
                     <div class="bank-left">
-                        <img class="pay-icon" src="../assets/icon/bank.png" alt="">
+                        <img class="pay-icon" src="@/assets/icon/wx.png" alt="">
                         <div class="name-wrap">
                             <div class="name">建行微信</div>
                             <!-- <div class="bank-number">储蓄卡<span>(3365)</span></div> -->
                         </div>
                     </div>
                     <div class="bank-right" @click="changePayWay($event, 'wxChoose')">
-                        <img src="../assets/icon/choose-circle.png" alt="" class="icon-common" v-if="chooseWay === 'wxChoose'">
+                        <img src="../assets/icon/choose-circle.png" alt="" class="icon-common" v-if="submitInfoObj.chooseWay === 'wxChoose'">
                         <img src="../assets/icon/circle.png" alt="" class="icon-common" v-else>                        
                     </div>
                 </div>
@@ -140,7 +140,7 @@
 </template>
 <script>
 import {postWallet, postCreateOrder, postPay,postCcbPay } from '@/api/api.js'
-import {checkName,checkPhone,checkEmail,checkIdcard,API_URL} from '@/util/index.js'
+import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr} from '@/util/index.js'
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
 export default {
@@ -152,18 +152,21 @@ export default {
             qr_code: '',
             amount: 0,
             wallet: 0,
-            sex: '0',
-            chooseWay: 'wxChoose',
-            name: '',
-            selectCertificate: '',  //用户选择的证件类型
-            certificateValue: '',    //证件号码
-            selectRelative: 9,    //用户选择的关系
-            phone: '',
-            email: '',
-            startTime: '',
-            endTime: '',
-            today: Date.now(),
+
+            tomorrow: Date.now(),
             couldSubmit: false,
+            submitInfoObj: {
+                sex: '0',
+                chooseWay: 'wxChoose',
+                name: '',
+                selectCertificate: '',  //用户选择的证件类型
+                certificateValue: '',    //证件号码
+                selectRelative: 9,    //用户选择的关系
+                phone: '',
+                email: '',
+                startTime: '',
+                endTime: '',
+            },
             certificateArr:[   //证件类型
                 {
                     num: '1',
@@ -226,40 +229,52 @@ export default {
     },
     methods: {
         checkSubmit () {  //判断用户信息是否填完整
-            if (this.startTime && this.endTime && this.name && this.selectCertificate && this.certificateValue && this.phone && this.email) {
+            if (this.submitInfoObj.startTime && this.submitInfoObj.endTime && this.submitInfoObj.name && this.submitInfoObj.selectCertificate && this.submitInfoObj.certificateValue && this.submitInfoObj.phone && this.submitInfoObj.email) {
                 this.couldSubmit = true;
             } else {
                 this.couldSubmit = false;
             }         
         },
-        infoChange () {   //内容改变事件函数
+        infoChange (event) {   //内容改变事件函数
             //#region 
             // console.log(this.startTime , this.endTime , this.name , this.selectCertificate , this.certificateValue , this.selectRelative , this.phone , this.email)
             // console.log(this.couldSubmit);
             //#endregion
+            this.submitInfoObj[arguments[1]] = event;
+            sessionStorage.setItem('submitInfoObj', JSON.stringify(this.submitInfoObj));
             this.checkSubmit();
         },
+        infoInput (event) {
+            this.submitInfoObj[arguments[1]] = event.target.value;
+            sessionStorage.setItem('submitInfoObj', JSON.stringify(this.submitInfoObj));
+            this.checkSubmit();            
+        },
         changePayWay (event, payWay) {   //改变支付渠道
-            this.chooseWay = payWay;
+            this.submitInfoObj.chooseWay = payWay;
+
         },
         turnBack (event) {
             this.$router.go(-1);
         },
         checkInfoCorrect () {   //校验用户填写的信息格式是否正确
-            if (!checkName(this.name)) {
-                this.$message.error('请输入正确的中文名字')
-                return false
-            }            
-            if (this.selectCertificate == '1' && !checkIdcard(this.certificateValue)) {
-                this.$message.error('请输入正确的身份证号')
+            // if (!checkName(this.submitInfoObj.name)) {
+            //     this.$message.error('请输入正确的中文名字');
+            //     this.$refs.inputName.focus();
+            //     return false
+            // }            
+            if (this.submitInfoObj.selectCertificate == '1' && !checkIdcard(this.submitInfoObj.certificateValue)) {
+                this.$message.error('请输入正确的身份证号');
+                this.$refs.inputCertificate.focus();
                 return false
             }
-            if(!checkPhone(this.phone)) {
+            if(!checkPhone(this.submitInfoObj.phone)) {
                 this.$message.error('请输入正确的手机号');
+                this.$refs.inputPhone.focus();
                 return false
             }
-            if(!checkEmail(this.email)) {
+            if(!checkEmail(this.submitInfoObj.email)) {
                 this.$message.error('请输入正确的邮箱');
+                this.$refs.inputEmail.focus();
                 return false                
             }
             return true;
@@ -282,17 +297,17 @@ export default {
                 // entrance: 1,  //该参数已删除
                 event_group_id: this.$route.query.groupId,
                 id: this.$route.query.policyId,
-                begin_time: this.startTime,
-                end_time: this.endTime,
+                begin_time: this.submitInfoObj.startTime,
+                end_time: this.submitInfoObj.endTime,
                 users: users,
                 applicant: {
-                    id_card_name: this.name,
-                    id_card: this.certificateValue,
-                    tel: this.phone,
-                    email: this.email,
-                    type: this.selectCertificate,
-                    sex: this.sex,
-                    relation: this.selectRelative
+                    id_card_name: this.submitInfoObj.name,
+                    id_card: this.submitInfoObj.certificateValue,
+                    tel: this.submitInfoObj.phone,
+                    email: this.submitInfoObj.email,
+                    type: this.submitInfoObj.selectCertificate,
+                    sex: this.submitInfoObj.sex,
+                    relation: this.submitInfoObj.selectRelative
                 }
             };
             //创建订单
@@ -302,19 +317,19 @@ export default {
                 console.log('createPay',res)
                 if (res.data.errcode === 0) {
                     this.orderId = res.data.order_id;
-                    if (this.chooseWay === 'balanceChoose') {
+                    if (this.submitInfoObj.chooseWay === 'balanceChoose') {
                         return postPay({
                             ssid: this.ssid,
                             order_id: res.data.order_id
                         })
-                    } else if (this.chooseWay === 'aliChoose'){
+                    } else if (this.submitInfoObj.chooseWay === 'aliChoose'){
                         return postCcbPay({
                             ssid: this.ssid,
                             orderid: res.data.order_id,
                             type: 16,
                             paytype: 'ali'                        
                         })
-                    } else if (this.chooseWay === 'wxChoose') {
+                    } else if (this.submitInfoObj.chooseWay === 'wxChoose') {
                         return postCcbPay({
                             ssid: this.ssid,
                             orderid: res.data.order_id,
@@ -331,8 +346,11 @@ export default {
             // 余额支付成功和建行二维码url返回
             .then((res) => {
                 if (res.data.errcode === 0 || res.data.error === 0) {
-                    if (this.chooseWay === 'balanceChoose') {
-                        this.$store.commit('changeUser',[]);  //支付成功后清除数据
+                    sessionStorage.removeItem('sessionSelectArr');
+                    sessionStorage.removeItem('submitInfoObj');
+                    sessionStorage.removeItem('groupId')
+                    this.$store.commit('changeUser',[]);  //创建订单后清除数据
+                    if (this.submitInfoObj.chooseWay === 'balanceChoose') {
                         this.$alert('余额支付成功', '提示', {
                             confirmButtonText: '确定',
                             callback: action => {
@@ -341,8 +359,8 @@ export default {
                                 })
                             }
                         }); 
-                    } else if (this.chooseWay === 'aliChoose' || this.chooseWay === 'wxChoose') {
-                        console.log(this.chooseWay,res)
+                    } else if (this.submitInfoObj.chooseWay === 'aliChoose' || this.submitInfoObj.chooseWay === 'wxChoose') {
+                        console.log(this.submitInfoObj.chooseWay,res)
                         this.qr_code = res.data.datArr.qr_code;
                         this.amount = res.data.datArr.amount;
                         this.readyPay = true;
@@ -365,17 +383,28 @@ export default {
             }
             this.createOrder();
 
+        },
+        initData () {
+            this.selectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
+            this.ssid = this.$cookie.get('ssid');
+            this.submitInfoObj.startTime = sessionStorage.getItem('startTime');
+            this.submitInfoObj.endTime = sessionStorage.getItem('endTime');     
+            if (sessionStorage.getItem('submitInfoObj')) {
+                this.submitInfoObj = JSON.parse(sessionStorage.getItem('submitInfoObj'));
+            }      
+            this.checkSubmit();
         }
       
     },
-    computed: {  
-        //vue中的客户信息
-        selectArr () {
-            return this.$store.state.selectArr
-        }
-    },
+    // computed: {  
+    //     //vue中的客户信息
+    //     selectArr () {
+    //         return this.$store.state.selectArr
+    //     }
+    // },
     created () {
-        this.ssid = this.$cookie.get('ssid');
+        this.initData();
+
         // 获取用户余额
         // postWallet({
         //     org_id: 32,

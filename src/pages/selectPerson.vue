@@ -61,8 +61,8 @@ export default {
             isClock: false,
             page: 1,
             total: 0,
-            searchArr: [],
             oneCost: 0,           //每份保险金额，需除以100
+            sessionSelectArr: [],
             noPolicyPerson: [
                 // {    //未保险人员集合
                 //     "group_id": 20058,
@@ -134,13 +134,21 @@ export default {
             })
         },
         initData() {
+            var sessionSelectArr = [];
+            if (sessionStorage.getItem('sessionSelectArr')) {
+                 sessionSelectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
+                 console.log(sessionSelectArr)
+            } 
+            this.$store.commit('changeUser', sessionSelectArr);            
+            
+            this.ssid = this.$cookie.get('ssid');
             this.oneCost = this.$route.query.oneCost;
             this.groupId = this.$route.query.groupId;
             this.getInfo();
             console.log("groupId",this.groupId)
         },
         selectPerson (event, index) {  //选择单个人操作
-            let person = this.isSearch ? this.searchArr[index] :this.noPolicyPerson[index];
+            let person = this.noPolicyPerson[index];
             let flag = false;   //是否已经选中
             let i = -1;
             for (let j = 0 ; j < this.selectArr.length ; j ++) {
@@ -156,6 +164,8 @@ export default {
             }else {
                 this.selectArr.push(person);
             }
+            console.log(this.selectArr)
+            sessionStorage.setItem('sessionSelectArr', JSON.stringify(this.selectArr));
             this.$store.commit('changeUser', this.selectArr);
         },
         selectAll (event) {   //选择全部操作
@@ -166,10 +176,12 @@ export default {
                     tempArr.push(ele);
                     this.tempSelect.push(ind);
                 })
+                sessionStorage.setItem('sessionSelectArr', JSON.stringify(tempArr));
                 this.$store.commit('changeUser', tempArr)
                 this.isSelectAll = true;
             } else {
                 this.tempSelect = [];
+                sessionStorage.removeItem('sessionSelectArr');
                 this.$store.commit('changeUser', [])
                 this.isSelectAll = false;
             }
@@ -212,8 +224,7 @@ export default {
         }
     },
     created () {
-        this.ssid = this.$cookie.get('ssid');
-        console.log('cookie.ssid:', this.ssid);
+
         this.initData();
     },
     filters: {

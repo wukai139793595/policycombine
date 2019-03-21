@@ -62,7 +62,8 @@ export default {
                 entrance: 1,
                 keywords: this.keywords,
                 page: this.page,
-                limit: this.limit
+                limit: this.limit,
+                group_id: this.groupId || ""
             })
             .then((res) => {
                 console.log(res)
@@ -119,6 +120,9 @@ export default {
     components: {
         personInfo,
         Scroll
+    },
+    created () {
+        this.groupId = this.$route.query.groupId;
     }
 }
 </script>

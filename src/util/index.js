@@ -18,6 +18,28 @@ export function checkIdcard (value) {
     let newStr = String(value);
     return /\d{15}|\d{18}|\d{17}[Xx]/.test(newStr)
 }
+//获取url问号?后指定的参数
+export function GetUrlParam(paraName) {
+  　　　　var url = document.location.toString();
+  　　　　var arrObj = url.split("?");
+  
+  　　　　if (arrObj.length > 1) {
+  　　　　　　var arrPara = arrObj[1].split("&");
+  　　　　　　var arr;
+  
+  　　　　　　for (var i = 0; i < arrPara.length; i++) {
+  　　　　　　　　arr = arrPara[i].split("=");
+  
+  　　　　　　　　if (arr != null && arr[0] == paraName) {
+  　　　　　　　　　　return arr[1];
+  　　　　　　　　}
+  　　　　　　}
+  　　　　　　return "";
+  　　　　}
+  　　　　else {
+  　　　　　　return "";
+  　　　　}
+  　　}
 
   //判断设备类型是不是pc
 export  function IsPC() {
@@ -36,6 +58,15 @@ export  function IsPC() {
 export  function Trim(str) {
     return str.replace(/(^\s*)|(\s*$)/g, "");
   };
+
+export function GetDateStr(AddDayCount) {
+  var dd = new Date();
+  dd.setDate(dd.getDate()+AddDayCount);//获取AddDayCount天后的日期
+  var y = dd.getFullYear();
+  var m = '0'+(dd.getMonth()+1);//获取当前月份的日期
+  var d = '0'+dd.getDate();
+  return y+"-"+m.substr(-2)+"-"+d.substr(-2);
+}
   //身份证判断
 export  function IdentityCodeValid(code) {
     var city = {

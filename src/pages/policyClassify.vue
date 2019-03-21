@@ -1,11 +1,5 @@
 <template>
     <div class="policy-classify">
-        <!-- <div class="head">
-            <div class="turn-back">
-                <img src="../assets/icon/left-direction.png" alt="" @click="turnBack($event)">
-            </div>
-            <div class="title">请选择保险</div>
-        </div>     -->
         <ls-head :headName="headName"/>
         <div class="classify-wrap">
             <div class="classify-list" v-for="(item,index) in policyArr" :key="index">
@@ -14,8 +8,8 @@
                     <div class="choose">
                         <span>{{item.premium | divisionHundred}}元/份</span>
                         <div class="img-wrap" @click="selectPolicy($event, index)">
-                            <img src="../assets/icon/choose-circle.png" alt="" v-if="item.id === policy_id">
-                            <img src="../assets/icon/circle.png" alt="" v-else>
+                            <img src="@/assets/icon/choose-circle.png" alt="" v-if="item.id === policy_id">
+                            <img src="@/assets/icon/circle.png" alt="" v-else>
                         </div>
                     </div>
                 </div>
@@ -36,8 +30,8 @@
         <div class="protocols-submit">
             <div class="protocols-wrap">
                 <div class="img-wrap" @click="changeAgree($event)">
-                    <img src="../assets/icon/square.png" alt="" v-if="!agreePolicyProtocols">
-                    <img src="../assets/icon/choose-square.png" alt="" v-if="agreePolicyProtocols">
+                    <img src="@/assets/icon/square.png" alt="" v-if="!agreePolicyProtocols">
+                    <img src="@/assets/icon/choose-square.png" alt="" v-if="agreePolicyProtocols">
                 </div>
                 <div class="protocols">
                     我已阅读
@@ -51,10 +45,10 @@
         <div class="protocols-detail" v-if='showPolicyProtocols'>
             <div class="content">
                 <div class="close-wrap">
-                    <img src="../assets/icon/close.png" alt="" @click="hideProtocols($event)">
+                    <img src="@/assets/icon/close.png" alt="" @click="hideProtocols($event)">
                 </div>
                 <div class="word-wrap">
-                    <iframe src="https://g.yunbisai.com/file/ins-p.html" frameborder="0"></iframe>
+                    <iframe src="https://g.yunbisai.com/file/ins.html" frameborder="0"></iframe>
                 </div>
             </div>
         </div>
@@ -166,7 +160,7 @@ export default {
                 return
             }
             if (!this.agreePolicyProtocols) {
-                this.$message("您未同意保险协议");
+                this.$message("您未同意投保须知");
                 return
             }
 
@@ -174,7 +168,7 @@ export default {
                 path: '/insurance/selectPerson',
                 query: {
                     oneCost: this.policyArr[this.selectedIndex].premium,
-                    groupId: this.$route.query.groupId,
+                    groupId: this.groupId,
                     policyId: this.policy_id
                 }
             })
@@ -186,6 +180,7 @@ export default {
     },
     created() {
         this.ssid = this.$cookie.get('ssid');
+        this.groupId = this.$route.query.groupId;
         console.log('cookie.ssid:', this.ssid);
         this.initData();
     },

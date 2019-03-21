@@ -11,7 +11,7 @@ let router =  new Router({
   mode: 'history',
   routes: [
     {
-      path: '/insurance/',
+      path: '/insurance',
       name: 'policy',
       component: policy
     },{

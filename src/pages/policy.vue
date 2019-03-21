@@ -111,26 +111,43 @@ export default {
         },
         toBuyPolicy (event, index) {
             var groupId = this.groupArr[index].event_group_id;
+            var startTime = this.groupArr[index].begintime;
+            var endTime = this.groupArr[index].endtime;
+            if (sessionStorage.getItem('groupId')) {
+                if (sessionStorage.getItem('groupId') != groupId) {
+                    sessionStorage.setItem('groupId', groupId);
+                    sessionStorage.removeItem('sessionSelectArr');
+                    sessionStorage.removeItem('startTime');
+                    sessionStorage.removeItem('endTime');
+                }
+            } else {
+                sessionStorage.setItem('groupId', groupId);
+                sessionStorage.setItem('startTime', startTime);
+                sessionStorage.setItem('endTime', endTime);
+            }
             postCheckOrder({
                 group_id: groupId,
                 ssid: this.ssid
             }).then(res => {
+                console.log('checkOrder',res);
                 if (res.data.errcode === 99999) {
-                    this.$route.meta.list = {
-                        "policy_holderd_card": "330324199610168172",  //投保人证件号
-                        "policy_holderd_name": "刘忠良",  //投保人姓名
-                        "policy_holderd_sex": "1",  //投保人性别 1男 2女
-                        "policy_holderd_card_type": 1,  //投保人证件类型 1:身份证;3:护照;10:港澳通行证;26:台湾居民往来内地通行证;
-                        "policy_holderd_tel": "13868637383",  //投保人电话
-                        "policy_holderd_email": "1249384402@qq.com",  //投保人邮箱
-                        "relation": 5,  //投保人与被保人关系 0--本人,1--配偶,2--父母,3--子女,5--兄弟姐妹,6--祖父母、外祖父母,7--雇佣,9--其他
-                        "start_date": "2019-03-06 00:00:00.000",  //保险开始时间
-                        "end_date": "2019-03-07 00:00:00.000",  //保险结束时间
-                        "order_id": "2019030514465416128550",  //订单号
-                        "total_amount": "12.00",  //金额
-                        "row_number": "1"                        
-                    }
-                    this.$route.meta.count = 3;
+                    // this.$route.meta.list = {
+                    //     "policy_holderd_card": "330324199610168172",  //投保人证件号
+                    //     "policy_holderd_name": "刘忠良",  //投保人姓名
+                    //     "policy_holderd_sex": "1",  //投保人性别 1男 2女
+                    //     "policy_holderd_card_type": 1,  //投保人证件类型 1:身份证;3:护照;10:港澳通行证;26:台湾居民往来内地通行证;
+                    //     "policy_holderd_tel": "13868637383",  //投保人电话
+                    //     "policy_holderd_email": "1249384402@qq.com",  //投保人邮箱
+                    //     "relation": 5,  //投保人与被保人关系 0--本人,1--配偶,2--父母,3--子女,5--兄弟姐妹,6--祖父母、外祖父母,7--雇佣,9--其他
+                    //     "start_date": "2019-03-06 00:00:00.000",  //保险开始时间
+                    //     "end_date": "2019-03-07 00:00:00.000",  //保险结束时间
+                    //     "order_id": "2019030514465416128550",  //订单号
+                    //     "total_amount": "12.00",  //金额
+                    //     "row_number": "1"                        
+                    // }
+                    // this.$route.meta.count = 3;
+                    this.$route.meta.list = res.data.list;
+                    this.$route.meta.count = res.data.count;
                     this.$router.push({
                         path: '/insurance/unpaid',
                     })
@@ -147,8 +164,9 @@ export default {
             })
 
         },
-        toLookPolicy () {
+        toLookPolicy (event, index) {
             let API_URL = location.protocol || 'http:';
+            let groupId = this.groupArr[index].event_group_id;
             if (/^dev-/.test(location.hostname) || /^localhost/.test(location.hostname)) {
                 API_URL += '//dev-'
             } else if (/^test-/.test(location.hostname)) {
@@ -156,8 +174,12 @@ export default {
             } else {
                 API_URL += '//'
             }
-            
-            window.parent.location.href = API_URL + 'm.yunbisai.com/insurance/insurance.html' ;
+            sessionStorage.setItem('insuranceGroupId',groupId);
+            if (location.hostname.indexOf('localhost') > -1) {
+                window.location.href = 'http://localhost:8080/insurance.html';
+            } else {
+                window.location.href = API_URL + 'm.yunbisai.com/insurance/insurance.html';
+            }
            
         }
     },
