@@ -38,6 +38,7 @@
 import lsHead from '@/components/lsHead.vue'
 import Scroll from '@/components/scroll.vue'
 import {postGroup, postCheckOrder} from '@/api/api.js'
+import {changeLocationReplace} from '@/util/index.js'
 export default {
     data () {
         return {
@@ -150,12 +151,16 @@ export default {
                     this.$route.meta.count = res.data.count;
                     this.$router.push({
                         path: '/insurance/unpaid',
+                        query: {
+                            eventId: this.$route.query.event_id
+                        }
                     })
                 } else {
                     this.$router.push({
                         path: '/insurance/policyClassify',
                         query: {
-                            groupId: groupId
+                            groupId: groupId,
+                            eventId: this.$route.query.event_id
                         }
                     })
                 }
@@ -165,7 +170,7 @@ export default {
 
         },
         toLookPolicy (event, index) {
-            let API_URL = location.protocol || 'http:';
+            // let API_URL = location.protocol || 'http:';
             let groupId = this.groupArr[index].event_group_id;
             if (/^dev-/.test(location.hostname) || /^localhost/.test(location.hostname)) {
                 API_URL += '//dev-'
@@ -175,11 +180,12 @@ export default {
                 API_URL += '//'
             }
             sessionStorage.setItem('insuranceGroupId',groupId);
-            if (location.hostname.indexOf('localhost') > -1) {
-                window.location.href = 'http://localhost:8080/insurance.html';
-            } else {
-                window.location.href = API_URL + 'm.yunbisai.com/insurance/insurance.html';
-            }
+            changeLocationHref('m.yunbisai.com/insurance/insurance.html');
+            // if (location.hostname.indexOf('localhost') > -1) {
+            //     window.location.href = 'http://localhost:8080/insurance.html';
+            // } else {
+            //     window.location.href = API_URL + 'm.yunbisai.com/insurance/insurance.html';
+            // }
            
         }
     },
@@ -194,8 +200,6 @@ export default {
         }
         console.log(this.eventID)
         this.ssid = this.$cookie.get('ssid');
-        console.log('cookie.ssid:', this.ssid);
-        console.log('router',this.$route)
         this.initData();
     }
 }

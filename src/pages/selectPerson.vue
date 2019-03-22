@@ -198,7 +198,8 @@ export default {
                 query: {
                     oneCost: this.$route.query.oneCost,
                     groupId: this.$route.query.groupId,
-                    policyId: this.$route.query.policyId
+                    policyId: this.$route.query.policyId,
+                    eventId: this.$route.query.eventId
                 }
             })
         },
@@ -228,7 +229,7 @@ export default {
         this.initData();
     },
     filters: {
-        divisionHundred (value) {   //没分金额要除以100
+        divisionHundred (value) {   //每份金额要除以100
             return (Number(value)/100).toFixed(2);
         },
         totalMoney (value, oneCost) {   //合计金额

@@ -18,6 +18,7 @@
                         险期：
                         <span>{{`${item.periodmin}-${item.periodmax}`}}天</span>
                     </span>
+                    <span>{{item.remark}}</span>
                     <span class="policy-sum">
                         保额：
                         <span>{{item.amount}}元</span>
@@ -169,7 +170,8 @@ export default {
                 query: {
                     oneCost: this.policyArr[this.selectedIndex].premium,
                     groupId: this.groupId,
-                    policyId: this.policy_id
+                    policyId: this.policy_id,
+                    eventId: this.$route.query.eventId
                 }
             })
 
@@ -329,18 +331,20 @@ export default {
         }
     }
     .protocols-detail{
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
         background-color: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         .content{
-            position: fixed;
-            top: 80px;
-            left: 80px;
-            right:80px;
-            bottom: 200px;
+            position: relative;
+            width: 80%;
+            height: 80%;
+            max-width: 919px;
             background-color: #fff;
             border-radius: 40px;
             border: 2px solid #eee;

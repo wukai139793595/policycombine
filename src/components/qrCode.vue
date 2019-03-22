@@ -1,6 +1,9 @@
 <template>
     <div id="qr-code">
-      <div id='code'>请使用{{chooseWay === 'aliChoose'?'支付宝':'微信'}}扫码支付</div>
+      <div class="close">
+        <img src="@/assets/icon/close.png" alt="" @click="turnBack($event)">
+      </div>
+      <div class='code'>请使用{{chooseWay === 'aliChoose'?'支付宝':'微信'}}扫码支付</div>
       <div class="canvas-wrap">
         <canvas id="canvas"></canvas>
       </div>
@@ -15,11 +18,12 @@
   import axios from 'axios'
   import Qs from 'qs'
   import {postPolling} from '@/api/api.js'
+  import {changeLocationReplace} from '@/util/index.js'
     export default{
       props: {
         qr_code: {
           type: String,
-          default: 'https://www.yunbisai.com/'
+          default: ''
         },
         amount: {
           type: Number,
@@ -32,13 +36,17 @@
         orderId: {
           type: String,
           default: ''
+        },
+        backUrl: {
+          type: String,
+          default: ''
         }
       },
       // props: ['qr_code','amount','chooseWay'],
       data(){
             return {
               codes:'',
-              times: 10,
+              times: 100,
               timeId: 0,
               isSuccess: false
             }
@@ -51,6 +59,7 @@
         //订单轮询
         pollingOrder () {
           var that = this;
+          //查询订单是否支付
           postPolling({
             ssid: this.ssid,
             orderid: that.orderId
@@ -60,10 +69,15 @@
               that.isSuccess = true;
               clearTimeout(that.timeId);
               setTimeout(() => {
-                that.$router.push({
-                  path: '/insurance'
+                that.$router.replace({
+                  path: '/insurance',
+                  query:{
+                    event_id: this.$route.query.eventId
+                  }
                 })
+
               }, 3e3)
+
 
             } else if (res.data.code === 'waiting') {
               console.log(`orderid:${that.orderId};waiting;times:${that.times}`)
@@ -91,6 +105,16 @@
             })
 
           }
+        },
+        //返回到管理页面
+        turnBack (event) {
+          // changeLocationReplace(this.backUrl)
+          this.$router.replace({
+            path: '/insurance',
+            query: {
+              event_id: this.$route.query.eventId
+            }
+          })
         }
       },
       created () {
@@ -106,21 +130,40 @@
 
 <style lang="less">
 #qr-code{
-    margin: 0 auto;
-    padding-top: 200px;
+    margin: 200px auto;
+    // padding-top: 60px;
     position: relative;
-    width: 100%;
-    height: 100%;
+    // width: 500px;
+    // height: 600px;
+    max-width: 600px;
+    width: 80%;
+    background-color: #fff;
     box-sizing: border-box;
-    div{
+    overflow: hidden;
+    border: 1px solid #eee;
+    .close{
+      width: 100%;
+      height: 40px;
+      text-align: right;
+      line-height: 40px;
+      margin-top: 20px;
+      img{
+        width:40px;
+        height: 40px;
+        margin-right: 20px;
+      }
+    }
+    .code{
         text-align: center;
         font-size: 38px; 
         margin-bottom: 40px;
     }
     .canvas-wrap{
         margin: 0 auto;
-        width: 328px; 
-        height: 328px; 
+        padding: 40px 0px 80px;
+        text-align: center;
+        // width: 328px; 
+        // height: 328px; 
     }
     .success-wrap{
       width: 100%;

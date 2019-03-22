@@ -18,6 +18,23 @@ export function checkIdcard (value) {
     let newStr = String(value);
     return /\d{15}|\d{18}|\d{17}[Xx]/.test(newStr)
 }
+export function changeLocationReplace (url) {
+  let API_URL = location.protocol || 'http:';
+  if (location.hostname.indexOf('localhost') > -1) {
+    window.location.replace('http://localhost:8080/insurance?event_id=4297');
+  } else {
+    window.location.replace(API_URL + url);
+      // window.location.href = API_URL + 'm.yunbisai.com/insurance/insurance.html';
+  }
+}
+export function changeLocationHref (url) {
+  let API_URL = location.protocol || 'http:';
+  if (location.hostname.indexOf('localhost') > -1) {
+    window.location.href = 'http://localhost:8080/insurance.html'
+  } else {
+    window.location.href = API_URL + url
+  }
+}
 //获取url问号?后指定的参数
 export function GetUrlParam(paraName) {
   　　　　var url = document.location.toString();

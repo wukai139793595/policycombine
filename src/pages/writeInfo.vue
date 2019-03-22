@@ -7,6 +7,9 @@
             <div class="title">填写信息</div>
         </div> -->
         <ls-head :headName='headName'/>
+        <div class="cue-words">
+            温馨提示:比赛时间为{{gameStartTime|moment('YYYY-MM-DD')}}至{{gameEndTime|moment('YYYY-MM-DD')}}，请在合适范围内选择
+        </div>
         <div class="set-time">
             <p>请设置保险起止时间</p>
             <div class="time-wrap">
@@ -80,6 +83,9 @@
                 </div> -->
             </div>
         </div>
+        <div class="count-wrap">
+            <span class="count">参保人数：{{selectArr.length}}</span><span class="total-money">合计金额：{{selectArr.length*oneCost}}</span>
+        </div>
         <div class="pay-way">
             <p>请选择支付方式</p>
             <div class="way-wrap">
@@ -134,6 +140,7 @@
                 :amount= 'amount'
                 :chooseWay = 'chooseWay'
                 :orderId = 'orderId'
+                :backUrl = 'backUrl'
             />
         </div>
     </div>
@@ -146,15 +153,17 @@ import lsHead from '@/components/lsHead.vue'
 export default {
     data () {
         return {
+            backUrl: '',
             headName: '填写信息',
             readyPay: false,
             orderId: '',
             qr_code: '',
             amount: 0,
             wallet: 0,
-
             tomorrow: Date.now(),
             couldSubmit: false,
+            gameStartTime: '',
+            gameEndTime: '',
             submitInfoObj: {
                 sex: '0',
                 chooseWay: 'wxChoose',
@@ -348,7 +357,9 @@ export default {
                 if (res.data.errcode === 0 || res.data.error === 0) {
                     sessionStorage.removeItem('sessionSelectArr');
                     sessionStorage.removeItem('submitInfoObj');
-                    sessionStorage.removeItem('groupId')
+                    sessionStorage.removeItem('groupId');
+                    sessionStorage.removeItem('startTime');
+                    sessionStorage.removeItem('endTime');
                     this.$store.commit('changeUser',[]);  //创建订单后清除数据
                     if (this.submitInfoObj.chooseWay === 'balanceChoose') {
                         this.$alert('余额支付成功', '提示', {
@@ -385,10 +396,12 @@ export default {
 
         },
         initData () {
-            this.selectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
             this.ssid = this.$cookie.get('ssid');
-            this.submitInfoObj.startTime = sessionStorage.getItem('startTime');
-            this.submitInfoObj.endTime = sessionStorage.getItem('endTime');     
+            this.oneCost = (Number(this.$route.query.oneCost)/100).toFixed(2);
+            this.selectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
+            this.gameStartTime = this.submitInfoObj.startTime = sessionStorage.getItem('startTime');
+            this.submitInfoObj.endTime = sessionStorage.getItem('startTime');    
+            this.gameEndTime  = sessionStorage.getItem('endTime'); 
             if (sessionStorage.getItem('submitInfoObj')) {
                 this.submitInfoObj = JSON.parse(sessionStorage.getItem('submitInfoObj'));
             }      
@@ -475,9 +488,15 @@ export default {
     //         font-size: 30px;
     //     }
     // }
+    .cue-words{
+        padding: 10px 10px 0px 10px;
+        font-size: 24px;
+        color: #3399ff;
+        text-indent: 20px;
+    }
     .set-time{
         width: 702px;       
-        margin: 50px auto 0 auto;
+        margin: 30px auto 0 auto;
         .time-wrap{
             width: 682px;
             height: 60px;
@@ -555,9 +574,17 @@ export default {
             }
         }
     }
+    .count-wrap{
+        width: 702px;
+        margin: 30px auto;
+        span{
+            margin-left: 30px;
+            font-size: 30px;
+        }
+    }
     .pay-way{
         width: 702px;
-        margin: 50px auto;
+        margin: 30px auto 50px;
         .way-wrap{
             width: 662px;
             margin: 30px auto;
@@ -644,12 +671,13 @@ export default {
         background-color: #3399ff;
     }
     .qr-code-wrap{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height: 100%;
         left: 0;
         top: 0;
-        background-color: #fff;
+        background-color: transparent;
+        z-index: 200;
     }
 }
 </style>

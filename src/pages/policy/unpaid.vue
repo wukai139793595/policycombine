@@ -81,6 +81,9 @@
                 </div> -->
             </div>
         </div>
+        <div class="count-wrap">
+            <span class="count">参保人数：{{count}}</span><span class="total-money">合计金额：{{totalAmount}}</span>
+        </div>
         <div class="pay-way">
             <p>请选择支付方式</p>
             <div class="way-wrap">
@@ -140,6 +143,7 @@
                 :amount= 'amount'
                 :chooseWay = 'chooseWay'
                 :orderId = 'orderId'
+                :backUrl = 'backUrl'
             />
         </div>  
     </div>
@@ -152,11 +156,13 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
     export default {
         data () {
             return {
-                
+                totalAmount: '',
+                count: 0,
                 headName: '未支付订单',
                 readyPay: false,
                 orderId: '',
                 qr_code: '',
+                backUrl: '',
                 amount: 0,
                 wallet: 0,
                 sex: '0',
@@ -170,7 +176,7 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
                 startTime: '',
                 endTime: '',
                 today: Date.now(),
-                couldSubmit: true,
+                // couldSubmit: true,
                 certificateArr:[   //证件类型
                     {
                         num: '1',
@@ -256,7 +262,7 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
                     this.$message.error('网络错误')
                 })
             },
-            submit (event) {
+            toSubmit (event) {
                 let tempWap = '';
                 if (this.chooseWay === 'aliChoose') {
                     tempWap = 'ali'
@@ -269,6 +275,7 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
                     type: 16,
                     paytype: tempWap                     
                 }).then(res => {
+                    console.log('CcbPay',res)
                     if (res.data.error === 0) {
                         this.qr_code = res.data.datArr.qr_code;
                         this.amount = res.data.datArr.amount;
@@ -277,7 +284,7 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
                         this.$message.error(res.data.msg)
                     }
                 }, err => {
-
+                        this.$message.error('网络错误')
                 })
             }
             // infoChange () {   //内容改变事件函数
@@ -329,6 +336,8 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
                     vm.$data.phone = tempMeta.list.policy_holderd_tel;
                     vm.$data.email = tempMeta.list.policy_holderd_email;
                     vm.$data.orderId = tempMeta.list.order_id;
+                    vm.$data.totalAmount = tempMeta.list.total_amount;
+                    vm.$data.count = tempMeta.count;
                 }
             })
         }
@@ -459,6 +468,14 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
             }
         }
     }
+    .count-wrap{
+        width: 702px;
+        margin: 30px auto;
+        span{
+            margin-left: 30px;
+            font-size: 30px;
+        }
+    }
     .pay-way{
         width: 702px;
         margin: 50px auto;
@@ -557,12 +574,13 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
         }
     }
     .qr-code-wrap{
-        position: absolute;
+        position: fixed;
         width: 100%;
         height: 100%;
         left: 0;
         top: 0;
-        background-color: #fff;
+        background-color: transparent;
+        z-index: 200;
     }
 }
 </style>
