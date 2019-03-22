@@ -118,7 +118,7 @@ export default {
         ...mapState(['money'])
     },
     methods: {
-        ...mapMutations(['changeMoney']) ,
+        // ...mapMutations(['changeMoney']) ,
         // 获取保险种类信息
         getInfo () {
             postInsuranceClassify({
@@ -149,8 +149,13 @@ export default {
             this.agreePolicyProtocols = !this.agreePolicyProtocols;
         },
         showProtocols (event) {
-            this.showPolicyProtocols = true;
-            this.changeMoney(10);
+            if (window === window.parent) {
+                this.showPolicyProtocols = true;
+            } else {
+                window.open('https://g.yunbisai.com/file/ins.html');
+            }
+
+            // this.changeMoney(10);
         },
         hideProtocols (event) {
             this.showPolicyProtocols = false;

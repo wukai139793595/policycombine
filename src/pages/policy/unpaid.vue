@@ -579,7 +579,7 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
         height: 100%;
         left: 0;
         top: 0;
-        background-color: transparent;
+        background-color: rgba(255, 255, 255, .7);;
         z-index: 200;
     }
 }

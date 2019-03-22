@@ -290,7 +290,7 @@ export default {
         },
         createOrder () {     //创建订单函数
             var that = this;
-            var users = new Array(this.selectArr.length);
+            var users = new Array(this.selectArr.length || 0);
             this.selectArr.forEach((ele, ind) => {
                 users[ind] = {
                     name: ele.name,
@@ -676,7 +676,7 @@ export default {
         height: 100%;
         left: 0;
         top: 0;
-        background-color: transparent;
+        background-color: rgba(255, 255, 255, .7);
         z-index: 200;
     }
 }

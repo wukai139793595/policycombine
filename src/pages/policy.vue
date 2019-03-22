@@ -169,8 +169,9 @@ export default {
             })
 
         },
+        // 跳转到查看保险页面
         toLookPolicy (event, index) {
-            // let API_URL = location.protocol || 'http:';
+            let API_URL = location.protocol || 'http:';
             let groupId = this.groupArr[index].event_group_id;
             if (/^dev-/.test(location.hostname) || /^localhost/.test(location.hostname)) {
                 API_URL += '//dev-'
@@ -180,12 +181,12 @@ export default {
                 API_URL += '//'
             }
             sessionStorage.setItem('insuranceGroupId',groupId);
-            changeLocationHref('m.yunbisai.com/insurance/insurance.html');
-            // if (location.hostname.indexOf('localhost') > -1) {
-            //     window.location.href = 'http://localhost:8080/insurance.html';
-            // } else {
-            //     window.location.href = API_URL + 'm.yunbisai.com/insurance/insurance.html';
-            // }
+            // changeLocationHref('m.yunbisai.com/insurance/insurance.html');
+            if (location.hostname.indexOf('localhost') > -1) {
+                window.location.href = 'http://localhost:8080/insurance.html';
+            } else {
+                window.location.href = API_URL + 'm.yunbisai.com/insurance/insurance.html';
+            }
            
         }
     },
