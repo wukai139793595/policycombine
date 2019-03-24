@@ -14,7 +14,8 @@ let router =  new Router({
       path: '/insurance',
       name: 'policy',
       component: policy
-    },{
+    },
+    {
       path: '/policy',
       name: 'policy',
       component: policy

@@ -9,7 +9,11 @@ html,body{
 li{
     list-style: none;
 }
-div.el-popper{
+
+
+
+
+/* div.el-popper{
     width: 500px;
     height: 500px;
 }
@@ -25,6 +29,9 @@ div.el-picker-panel__body{
     padding-top: 40px;
     width: 480px;   
     height: 450px;
+} */
+div.el-popper{
+    max-width: 750px;
 }
 span.el-input__prefix{
     display: none;
@@ -34,17 +41,17 @@ span.el-input__prefix{
 }
 
 /* 日历字体大小调整 */
-.el-picker-panel .el-picker-panel__body-wrapper .el-picker-panel__body .el-date-picker__header span{
+/* .el-picker-panel .el-picker-panel__body-wrapper .el-picker-panel__body .el-date-picker__header span{
     font-size: 24px;
 }
 
 .el-picker-panel .el-picker-panel__body-wrapper .el-picker-panel__body .el-date-table div span{
     font-size: 24px;
-}
+} */
 
 /* alert样式调整 */
 
-.el-message-box .el-message-box__header span{
+/* .el-message-box .el-message-box__header span{
     font-size: 24px;
 }
 .el-message-box .el-message-box__close{
@@ -56,5 +63,9 @@ span.el-input__prefix{
 }
 .el-message-box .el-message-box__btns span {
     font-size: 26px;
-}
+} */
 
+div.el-message{
+    max-width: 750px;
+    min-width: 320px;
+}

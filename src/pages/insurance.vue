@@ -438,6 +438,8 @@ export default {
                 text-indent: 40px;
             }
             .time-wrap{
+                // width: 750px;
+                width: 650px;
                 margin-top: 30px;
                 margin-bottom: 40px;
                 display: flex;
@@ -459,10 +461,13 @@ export default {
                 }
                 .el-date-editor{
                     background-color: #f4f4f4;
+                    flex-shrink: 1;
                     .el-input__inner{
                         text-align: center;
-                        font-size: 26px;
+                        // font-size: 26px;
                         color: #666;
+                        padding-left: 0;
+                        padding-right: 0;
                     }
                 }
                 // div{

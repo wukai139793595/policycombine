@@ -84,7 +84,7 @@
             </div>
         </div>
         <div class="count-wrap">
-            <span class="count">参保人数：{{selectArr.length}}</span><span class="total-money">合计金额：{{selectArr.length*oneCost}}</span>
+            <span class="count">参保人数：{{selectArr.length}}</span><span class="total-money">合计金额：{{(selectArr.length || 0)*oneCost}}</span>
         </div>
         <div class="pay-way">
             <p>请选择支付方式</p>
@@ -153,6 +153,7 @@ import lsHead from '@/components/lsHead.vue'
 export default {
     data () {
         return {
+            selectArr: [],
             backUrl: '',
             headName: '填写信息',
             readyPay: false,
@@ -398,7 +399,7 @@ export default {
         initData () {
             this.ssid = this.$cookie.get('ssid');
             this.oneCost = (Number(this.$route.query.oneCost)/100).toFixed(2);
-            this.selectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
+            this.selectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr')) || [];
             this.gameStartTime = this.submitInfoObj.startTime = sessionStorage.getItem('startTime');
             this.submitInfoObj.endTime = sessionStorage.getItem('startTime');    
             this.gameEndTime  = sessionStorage.getItem('endTime'); 
@@ -507,19 +508,23 @@ export default {
                 line-height: 60px;
                 text-align: center;
             }
-            .data-picker{
-                width: 48%;
-                text-align: center;
-                .el-input__inner{
-                    text-align: center;
-                    font-size: 28px;
-                    background-color: #eee;
-                }
-                .el-input__inner::placeholder{
-                    text-align: center;
-                    font-size: 28px;
-                }
-            }
+            // .data-picker{
+            //     width: 48%;
+            //     text-align: center;
+            //     flex-shrink: 1;
+            //     .el-input__inner{
+            //         text-align: center;
+            //         // font-size: 28px;
+            //         background-color: #eee;
+            //         padding-left: 0;
+            //         padding-right: 0;
+            //         margin-left: 0;
+            //     }
+            //     .el-input__inner::placeholder{
+            //         text-align: center;
+            //         // font-size: 28px;
+            //     }
+            // }
             .striping{
                 width: 4%;
                 position: relative;
@@ -649,6 +654,10 @@ export default {
                 .bank-right{
                     width: 36px;
                     height: 36px;
+                    img{
+                        width: 100%;
+                        height: 100%;
+                    }
                 }
             }
         }

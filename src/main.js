@@ -6,8 +6,9 @@ import router from './router'
 import store from './store/index.js'
 import ElementUi from 'element-ui'
 import  './util/flexible.js'
-import './assets/style/util.css'
 import 'element-ui/lib/theme-chalk/index.css';
+import './assets/style/util.css'
+// import '@/assets/style/index.css'
 import moment from 'vue-moment'
 import Cookie from 'vue-cookie'
 Vue.config.productionTip = false

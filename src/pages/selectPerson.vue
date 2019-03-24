@@ -64,20 +64,20 @@ export default {
             oneCost: 0,           //每份保险金额，需除以100
             sessionSelectArr: [],
             noPolicyPerson: [
-                // {    //未保险人员集合
-                //     "group_id": 20058,
-                //     "name": "阿萨德",
-                //     "tel": "13666698009",
-                //     "idcard": "asd4342323",
-                //     "row_number": "1"
-                // },
-                // {
-                //     "group_id": 20058,
-                //     "name": "叶晓飞",
-                //     "tel": "13478670738",
-                //     "idcard": "332521197703260239",
-                //     "row_number": "2"
-                // }
+                {    //未保险人员集合
+                    "group_id": 20058,
+                    "name": "阿萨德",
+                    "tel": "13666698009",
+                    "idcard": "asd4342323",
+                    "row_number": "1"
+                },
+                {
+                    "group_id": 20058,
+                    "name": "叶晓飞",
+                    "tel": "13478670738",
+                    "idcard": "332521197703260239",
+                    "row_number": "2"
+                }
             ],
             isSelectAll: false      //是否全选
         }
