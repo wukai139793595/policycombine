@@ -20,7 +20,9 @@
                     type="date"
                     :placeholder="tomorrow|moment('YYYY-MM-DD')"
                     format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd">
+                    value-format="yyyy-MM-dd"
+                    :picker-options="startDatePicker"                    
+                    >
                 </el-date-picker>
                 <div class="striping"></div>
                 <el-date-picker
@@ -30,7 +32,9 @@
                     type="date"
                     :placeholder="tomorrow|moment('YYYY-MM-DD')"
                     format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd">
+                    value-format="yyyy-MM-dd"
+                    :picker-options='endDatePicker'
+                    >
                 </el-date-picker>
             </div>
         </div>
@@ -153,6 +157,8 @@ import lsHead from '@/components/lsHead.vue'
 export default {
     data () {
         return {
+            startDatePicker: this.beginDate(),  
+            endDatePicker:this.processDate(),
             selectArr: [],
             backUrl: '',
             headName: '填写信息',
@@ -238,6 +244,30 @@ export default {
         }
     },
     methods: {
+        beginDate () {
+            var that = this;
+            return {
+                disabledDate (time) {
+                    if (that.submitInfoObj.startTime) {
+                        return time.getTime() < new Date(that.startTime)
+                    } else {
+                        return time.getTime() < Date.now()
+                    }
+                }
+            }
+        },
+        processDate () {
+            var that = this;
+            return {
+                disabledDate (time) {
+                    if (that.submitInfoObj.startTime) {
+                        return time.getTime() < new Date(that.startTime)
+                    } else {
+                        return time.getTime() < Date.now()
+                    }
+                }
+            }
+        },
         checkSubmit () {  //判断用户信息是否填完整
             if (this.submitInfoObj.startTime && this.submitInfoObj.endTime && this.submitInfoObj.name && this.submitInfoObj.selectCertificate && this.submitInfoObj.certificateValue && this.submitInfoObj.phone && this.submitInfoObj.email) {
                 this.couldSubmit = true;

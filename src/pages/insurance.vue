@@ -49,7 +49,9 @@
                             type="date"
                             :placeholder="today|moment('YYYY-MM-DD')"
                             format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd">
+                            value-format="yyyy-MM-dd"
+
+                            >
                         </el-date-picker>
                         <!-- <div class="time-start">2019-02-18</div> -->
                         <span class="line"></span>
@@ -58,7 +60,9 @@
                             type="date"
                             :placeholder="today|moment('YYYY-MM-DD')"
                             format="yyyy-MM-dd"
-                            value-format="yyyy-MM-dd">
+                            value-format="yyyy-MM-dd"
+
+                            >
                         </el-date-picker>
                     </div>
                     <div class="status-hint">
@@ -95,7 +99,9 @@ export default {
             limit: 10,
             total: 0,
             totalPage: 0,
-            state: '',            
+            state: '',     
+            // 设置不可选时间
+
             selectList: [
                 '全部',
                 '已交保',
@@ -154,6 +160,7 @@ export default {
         personInfo
     },
     methods: {
+
         initData () {
             //按页数进行查保
             this.isClock = true;
