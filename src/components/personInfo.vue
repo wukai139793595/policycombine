@@ -100,6 +100,7 @@ import {postPolicyCancel} from '@/api/insurance.js'
                             insured_id: this.insured_id
                         })
                         .then(res => {
+                            console.log(res)
                             if (res.data.errcode === 0) {
                                 this.$emit('changeState', 3);                       
                                 this.$message({

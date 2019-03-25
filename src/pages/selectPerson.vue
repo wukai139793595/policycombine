@@ -8,7 +8,7 @@
         </div>  -->
         <ls-head  :headName='headName'/>
         <div class="search-wrap">
-            <img src="../assets/icon/search-icon.png" alt="">
+            <img src="../assets/icon/search-icon.png" alt="" @click="toSearchPerson($event)">
             <input class="input" type="text" placeholder="搜索" v-model="inputValue" @keyup.enter='toSearchPerson($event)'>
         </div>
         <div class="scroll-wrap">
@@ -34,7 +34,7 @@
         </div>
         <div class="submit-wrap">
             <div class="select-all" @click="selectAll($event)">
-                <img src="../assets/icon/choose-square.png" alt="" v-if="selectArr.length === noPolicyPerson.length">
+                <img src="../assets/icon/choose-square.png" alt="" v-if="selectArr.length >= noPolicyPerson.length">
                 <img src="../assets/icon/square.png" alt="" v-else>
                 <span>全选</span>
             </div>
@@ -61,23 +61,24 @@ export default {
             isClock: false,
             page: 1,
             total: 0,
+            limit: 20,
             oneCost: 0,           //每份保险金额，需除以100
             sessionSelectArr: [],
             noPolicyPerson: [
-                {    //未保险人员集合
-                    "group_id": 20058,
-                    "name": "阿萨德",
-                    "tel": "13666698009",
-                    "idcard": "asd4342323",
-                    "row_number": "1"
-                },
-                {
-                    "group_id": 20058,
-                    "name": "叶晓飞",
-                    "tel": "13478670738",
-                    "idcard": "332521197703260239",
-                    "row_number": "2"
-                }
+                // {    //未保险人员集合
+                //     "group_id": 20058,
+                //     "name": "阿萨德",
+                //     "tel": "13666698009",
+                //     "idcard": "asd4342323",
+                //     "row_number": "1"
+                // },
+                // {
+                //     "group_id": 20058,
+                //     "name": "叶晓飞",
+                //     "tel": "13478670738",
+                //     "idcard": "332521197703260239",
+                //     "row_number": "2"
+                // }
             ],
             isSelectAll: false      //是否全选
         }
@@ -115,9 +116,9 @@ export default {
             postNoPolicyPerson({
                 group_id: this.groupId,
                 // group_id: '20058',  //注：正式应改成参数
-                name: this.inputValue,
+                name: this.inputValue.trim(),
                 page: this.page,
-                limit: 20,
+                limit: this.limit,
                 ssid: this.ssid
             })
             .then((res) => {
@@ -133,19 +134,51 @@ export default {
                 this.$message.error('网络错误')
             })
         },
+        getInfoAll () {
+            this.noPolicyPerson = [];
+            this.inputValue='';
+            this.page=1;
+            postNoPolicyPerson({
+                group_id: this.groupId,
+                // group_id: '20058',  //注：正式应改成参数
+                name: this.inputValue.trim(),
+                page: '',
+                limit:'',
+                ssid: this.ssid
+            }).then(res => {
+                if (res.data.errcode === 0) {
+                    this.noPolicyPerson.push(...res.data.list);
+                    this.total = res.data.total;
+                    sessionStorage.setItem('sessionSelectArr', JSON.stringify(this.noPolicyPerson));
+                    sessionStorage.setItem('isSelectAll', true);
+                    this.$store.commit('changeUser', this.noPolicyPerson);
+                    this.isSelectAll = true;
+                } else {
+                    this.$message.error(res.data.msg)
+                }
+            },err => {
+                this.$message.error('网络错误')
+            })
+        },
         initData() {
-            var sessionSelectArr = [];
-            if (sessionStorage.getItem('sessionSelectArr')) {
-                 sessionSelectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
-                 console.log(sessionSelectArr)
-            } 
-            this.$store.commit('changeUser', sessionSelectArr);            
-            
             this.ssid = this.$cookie.get('ssid');
             this.oneCost = this.$route.query.oneCost;
             this.groupId = this.$route.query.groupId;
-            this.getInfo();
-            console.log("groupId",this.groupId)
+            this.riskCode = this.$route.query.risk_code;
+            var sessionSelectArr = [];
+            if (sessionStorage.getItem('isSelectAll') === "true") {
+                this.getInfoAll()
+            } else {
+                if (sessionStorage.getItem('sessionSelectArr')) {
+                     sessionSelectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
+                     console.log(sessionSelectArr)
+                } 
+                this.$store.commit('changeUser', sessionSelectArr);            
+                
+
+                this.getInfo();
+                console.log("groupId",this.groupId)
+            }
         },
         selectPerson (event, index) {  //选择单个人操作
             let person = this.noPolicyPerson[index];
@@ -168,20 +201,25 @@ export default {
             sessionStorage.setItem('sessionSelectArr', JSON.stringify(this.selectArr));
             this.$store.commit('changeUser', this.selectArr);
         },
+
         selectAll (event) {   //选择全部操作
             if (!this.isSelectAll) {
-                let tempArr = [];
-                this.tempSelect = [];
-                this.noPolicyPerson.forEach((ele, ind) => {
-                    tempArr.push(ele);
-                    this.tempSelect.push(ind);
-                })
-                sessionStorage.setItem('sessionSelectArr', JSON.stringify(tempArr));
-                this.$store.commit('changeUser', tempArr)
-                this.isSelectAll = true;
+                this.getInfoAll();
+
+                // 全选已加载人员
+                // let tempArr = [];
+                // this.tempSelect = [];
+                // this.noPolicyPerson.forEach((ele, ind) => {
+                //     tempArr.push(ele);
+                //     this.tempSelect.push(ind);
+                // })
+                // sessionStorage.setItem('sessionSelectArr', JSON.stringify(tempArr));
+                // this.$store.commit('changeUser', tempArr)
+                // this.isSelectAll = true;
             } else {
                 this.tempSelect = [];
                 sessionStorage.removeItem('sessionSelectArr');
+                sessionStorage.removeItem('isSelectAll');
                 this.$store.commit('changeUser', [])
                 this.isSelectAll = false;
             }
@@ -192,6 +230,10 @@ export default {
                 this.$message('您还未选择要保险的名单');
                 return
             }
+            if (this.riskCode == 'EAC' && this.selectArr.length < 3) {
+                this.$message('团体险需选择三人以上');
+                return
+            }
             this.$store.commit('changeMoney', this.totalMoney);
             this.$router.push({
                 path: '/insurance/writeInfo',
@@ -199,7 +241,7 @@ export default {
                     oneCost: this.$route.query.oneCost,
                     groupId: this.$route.query.groupId,
                     policyId: this.$route.query.policyId,
-                    eventId: this.$route.query.eventId
+                    event_id: this.$route.query.event_id
                 }
             })
         },

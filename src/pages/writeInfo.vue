@@ -10,17 +10,19 @@
         <div class="cue-words">
             温馨提示:比赛时间为{{gameStartTime|moment('YYYY-MM-DD')}}至{{gameEndTime|moment('YYYY-MM-DD')}}，请在合适范围内选择
         </div>
+                    <!-- :placeholder="gameStartTime|moment('YYYY-MM-DD')" -->
+                    <!-- :placeholder="gameStartTime|moment('YYYY-MM-DD')" -->
         <div class="set-time">
-            <p>请设置保险起止时间</p>
+            <p>请设置保险起止时间:<span class="policy-duration">该保险险期{{selectedPolicy.periodmin}}-{{selectedPolicy.periodmax}}</span></p>
             <div class="time-wrap">
                 <el-date-picker
                     @change="infoChange($event, 'startTime')"
                     class="data-picker"
                     v-model="submitInfoObj.startTime"
                     type="date"
-                    :placeholder="tomorrow|moment('YYYY-MM-DD')"
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd"
+                    :placeholder="'开始时间'"
                     :picker-options="startDatePicker"                    
                     >
                 </el-date-picker>
@@ -30,7 +32,7 @@
                     class="data-picker"
                     v-model="submitInfoObj.endTime"
                     type="date"
-                    :placeholder="tomorrow|moment('YYYY-MM-DD')"
+                    :placeholder="'结束时间'"
                     format="yyyy-MM-dd"
                     value-format="yyyy-MM-dd"
                     :picker-options='endDatePicker'
@@ -58,7 +60,7 @@
                 </div>
                 <div class="name-wrap">
                     <span class="name">证件号</span>
-                    <input type="text" placeholder="输入投保人身份证" @input="infoInput($event)" v-model="submitInfoObj.certificateValue" ref="inputCertificate">
+                    <input type="text" placeholder="输入投保人证件号" @input="infoInput($event)" v-model="submitInfoObj.certificateValue" ref="inputCertificate" maxlength="18">
                 </div>
                 <div class="sex-wrap">
                     <span class="name">性别</span>
@@ -67,11 +69,11 @@
                 </div>
                 <div class="phone-wrap">
                     <span class="name">电话</span>
-                    <input type="text" placeholder="输入投保人电话" @input="infoInput($event)" v-model="submitInfoObj.phone" ref="inputPhone">
+                    <input type="phone" placeholder="输入投保人电话" @input="infoInput($event)" v-model="submitInfoObj.phone" ref="inputPhone" maxlength="11">
                 </div>
                 <div class="email-wrap">
                     <span class="name">邮箱</span>
-                    <input type="text" placeholder="输入投保人邮箱" @input="infoInput($event)" v-model="submitInfoObj.email" ref='inputEmail'> 
+                    <input type="email" placeholder="输入投保人邮箱" @input="infoInput($event)" v-model="submitInfoObj.email" ref='inputEmail'> 
                 </div>
                 
                 <!-- <div class="relative-wrap">
@@ -151,12 +153,14 @@
 </template>
 <script>
 import {postWallet, postCreateOrder, postPay,postCcbPay } from '@/api/api.js'
-import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr} from '@/util/index.js'
+import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr} from '@/util/index.js'
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
 export default {
     data () {
         return {
+            checkSelectAll: 0,
+            selectedPolicy:{},
             startDatePicker: this.beginDate(),  
             endDatePicker:this.processDate(),
             selectArr: [],
@@ -248,8 +252,8 @@ export default {
             var that = this;
             return {
                 disabledDate (time) {
-                    if (that.submitInfoObj.startTime) {
-                        return time.getTime() < new Date(that.startTime)
+                    if (that.submitInfoObj.endTime) {
+                        return time.getTime() > new Date(that.submitInfoObj.endTime) 
                     } else {
                         return time.getTime() < Date.now()
                     }
@@ -261,9 +265,10 @@ export default {
             return {
                 disabledDate (time) {
                     if (that.submitInfoObj.startTime) {
-                        return time.getTime() < new Date(that.startTime)
+                        var preDate = GetTheDateStr(that.submitInfoObj.startTime, -1);
+                        return time.getTime() < new Date(preDate);
                     } else {
-                        return time.getTime() < Date.now()
+                        return time.getTime() < that.gameStartTime
                     }
                 }
             }
@@ -322,15 +327,19 @@ export default {
         createOrder () {     //创建订单函数
             var that = this;
             var users = new Array(this.selectArr.length || 0);
-            this.selectArr.forEach((ele, ind) => {
-                users[ind] = {
-                    name: ele.name,
-                    id_card: ele.idcard,
-                    type: ele.cardtype,
-                    tel: ele.tel,
-                    birthday: ele.birthday
-                }
-            })
+            if (sessionStorage.getItem('isSelectAll') == 1) {
+                users = [];
+            } else {
+                this.selectArr.forEach((ele, ind) => {
+                    users[ind] = {
+                        name: ele.name,
+                        id_card: ele.idcard,
+                        type: ele.cardtype,
+                        tel: ele.tel,
+                        birthday: ele.birthday
+                    }
+                })
+            }
             var data = {
                 ssid: this.ssid,
                 // org_id: 1,
@@ -391,6 +400,8 @@ export default {
                     sessionStorage.removeItem('groupId');
                     sessionStorage.removeItem('startTime');
                     sessionStorage.removeItem('endTime');
+                    sessionStorage.removeItem('isSelectAll');
+                    sessionStorage.removeItem('selectedPolicy');
                     this.$store.commit('changeUser',[]);  //创建订单后清除数据
                     if (this.submitInfoObj.chooseWay === 'balanceChoose') {
                         this.$alert('余额支付成功', '提示', {
@@ -428,11 +439,16 @@ export default {
         },
         initData () {
             this.ssid = this.$cookie.get('ssid');
+            this.selectedPolicy =  JSON.parse(sessionStorage.getItem('selectedPolicy')) || {};
+            // 单笔金额  需要除以100
             this.oneCost = (Number(this.$route.query.oneCost)/100).toFixed(2);
             this.selectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr')) || [];
-            this.gameStartTime = this.submitInfoObj.startTime = sessionStorage.getItem('startTime');
-            this.submitInfoObj.endTime = sessionStorage.getItem('startTime');    
-            this.gameEndTime  = sessionStorage.getItem('endTime'); 
+            // 开始时间
+             this.gameStartTime =sessionStorage.getItem('startTime') || "";
+            // this.gameStartTime = this.submitInfoObj.startTime = sessionStorage.getItem('startTime') || "";
+            // this.submitInfoObj.endTime = sessionStorage.getItem('startTime') || "";    
+            //  结束时间
+            this.gameEndTime  = sessionStorage.getItem('endTime') || ""; 
             if (sessionStorage.getItem('submitInfoObj')) {
                 this.submitInfoObj = JSON.parse(sessionStorage.getItem('submitInfoObj'));
             }      
@@ -528,6 +544,14 @@ export default {
     .set-time{
         width: 702px;       
         margin: 30px auto 0 auto;
+        p{
+            font-size: 30px;
+            .policy-duration{
+                font-size: 26px;
+                color: #999;
+                margin-left: 8px;
+            }
+        }
         .time-wrap{
             width: 682px;
             height: 60px;

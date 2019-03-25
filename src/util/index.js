@@ -75,7 +75,7 @@ export  function IsPC() {
 export  function Trim(str) {
     return str.replace(/(^\s*)|(\s*$)/g, "");
   };
-
+//当天的前几天
 export function GetDateStr(AddDayCount) {
   var dd = new Date();
   dd.setDate(dd.getDate()+AddDayCount);//获取AddDayCount天后的日期
@@ -84,6 +84,18 @@ export function GetDateStr(AddDayCount) {
   var d = '0'+dd.getDate();
   return y+"-"+m.substr(-2)+"-"+d.substr(-2);
 }
+//特定日期的前几天
+export function GetTheDateStr(date,AddDayCount) {
+  var dd = new Date(date);
+  dd.setDate(dd.getDate()+AddDayCount);//获取AddDayCount天后的日期
+  var y = dd.getFullYear();
+  var m = '0'+(dd.getMonth()+1);//获取当前月份的日期
+  var d = '0'+dd.getDate();
+  return y+"-"+m.substr(-2)+"-"+d.substr(-2);
+}
+
+
+
   //身份证判断
 export  function IdentityCodeValid(code) {
     var city = {

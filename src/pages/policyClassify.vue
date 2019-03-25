@@ -66,46 +66,46 @@ export default {
             showPolicyProtocols: false,//显示保险协议
             agreePolicyProtocols: false,//是否同意保险协议
             policyArr: [ 
-                {
-                    "id":"1",  //险种id
-                    "risk_code":"EAA",  //险种代码
-                    "risk_name":"个人意外险",  //险种名字
-                    "periodmin":"1",  //保险最小期限
-                    "amount":"200600", //保额
-                    "premium":"1000",  //保险费
-                    "periodmax":"3",  //保险最大期限
-                    "ROW_NUMBER":"1" 
-                },
-                {
-                    "id":"2",
-                    "risk_code":"EAA",
-                    "risk_name":"个人意外险",
-                    "periodmin":"4",
-                    "amount":"200600",
-                    "premium":"1500",
-                    "periodmax":"5",
-                    "ROW_NUMBER":"2"
-                },
-                {
-                    "id":"3",
-                    "risk_code":"EAA",
-                    "risk_name":"个人意外险",
-                    "periodmin":"6",
-                    "amount":"200600",
-                    "premium":"2000",
-                    "periodmax":"7",
-                    "ROW_NUMBER":"3"
-                },
-                {
-                    "id":"4",
-                    "risk_code":"EAC",
-                    "risk_name":"团体意外险",
-                    "periodmin":"1",
-                    "amount":"120600",
-                    "premium":"450",
-                    "periodmax":"3",
-                    "ROW_NUMBER":"4"
-                }
+                // {
+                //     "id":"1",  //险种id
+                //     "risk_code":"EAA",  //险种代码
+                //     "risk_name":"个人意外险",  //险种名字
+                //     "periodmin":"1",  //保险最小期限
+                //     "amount":"200600", //保额
+                //     "premium":"1000",  //保险费
+                //     "periodmax":"3",  //保险最大期限
+                //     "ROW_NUMBER":"1" 
+                // },
+                // {
+                //     "id":"2",
+                //     "risk_code":"EAA",
+                //     "risk_name":"个人意外险",
+                //     "periodmin":"4",
+                //     "amount":"200600",
+                //     "premium":"1500",
+                //     "periodmax":"5",
+                //     "ROW_NUMBER":"2"
+                // },
+                // {
+                //     "id":"3",
+                //     "risk_code":"EAA",
+                //     "risk_name":"个人意外险",
+                //     "periodmin":"6",
+                //     "amount":"200600",
+                //     "premium":"2000",
+                //     "periodmax":"7",
+                //     "ROW_NUMBER":"3"
+                // },
+                // {
+                //     "id":"4",
+                //     "risk_code":"EAC",
+                //     "risk_name":"团体意外险",
+                //     "periodmin":"1",
+                //     "amount":"120600",
+                //     "premium":"450",
+                //     "periodmax":"3",
+                //     "ROW_NUMBER":"4"
+                // }
             ],
             policy_id: '',    //选择的id
             selected_index: 0  //选择的序号
@@ -143,6 +143,7 @@ export default {
         selectPolicy (event, index) {
             this.policy_id = this.policyArr[index].id;
             this.selectedIndex = index;
+            sessionStorage.setItem('selectedPolicy', JSON.stringify(this.policyArr[index]));
         },
         // 选择是否同意保险协议
         changeAgree (event) {
@@ -176,7 +177,8 @@ export default {
                     oneCost: this.policyArr[this.selectedIndex].premium,
                     groupId: this.groupId,
                     policyId: this.policy_id,
-                    eventId: this.$route.query.eventId
+                    event_id: this.$route.query.event_id,
+                    risk_code: this.policyArr[this.selectedIndex].risk_code
                 }
             })
 

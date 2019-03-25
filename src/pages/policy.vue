@@ -32,6 +32,9 @@
                 </div>        
             </scroll>
         </div>
+        <div class="noGroup" v-if="groupArr.length===0">
+            目前没有赛事小组
+        </div>
     </div>
 </template>
 <script>
@@ -120,11 +123,12 @@ export default {
                     sessionStorage.removeItem('sessionSelectArr');
                     sessionStorage.removeItem('startTime');
                     sessionStorage.removeItem('endTime');
+                    sessionStorage.removeItem('isSelectAll');
+                    sessionStorage.removeItem('selectedPolicy');
                 }
             } else {
                 sessionStorage.setItem('groupId', groupId);
-                sessionStorage.setItem('startTime', startTime);
-                sessionStorage.setItem('endTime', endTime);
+
             }
             postCheckOrder({
                 group_id: groupId,
@@ -152,15 +156,17 @@ export default {
                     this.$router.push({
                         path: '/insurance/unpaid',
                         query: {
-                            eventId: this.$route.query.event_id
+                            event_id: this.$route.query.event_id
                         }
                     })
                 } else {
+                    sessionStorage.setItem('startTime', startTime);
+                    sessionStorage.setItem('endTime', endTime);
                     this.$router.push({
                         path: '/insurance/policyClassify',
                         query: {
                             groupId: groupId,
-                            eventId: this.$route.query.event_id
+                            event_id: this.$route.query.event_id
                         }
                     })
                 }
@@ -272,6 +278,12 @@ export default {
 
             }
         }
+    }
+    .noGroup{
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin-top: 40px;
     }
 }
 </style>

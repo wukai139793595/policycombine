@@ -72,7 +72,7 @@
                 that.$router.replace({
                   path: '/insurance',
                   query:{
-                    event_id: this.$route.query.eventId
+                    event_id: this.$route.query.event_id
                   }
                 })
 
@@ -112,7 +112,7 @@
           this.$router.replace({
             path: '/insurance',
             query: {
-              event_id: this.$route.query.eventId
+              event_id: this.$route.query.event_id
             }
           })
         }

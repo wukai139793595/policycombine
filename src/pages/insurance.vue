@@ -37,6 +37,9 @@
                 </div>            
             </scroll>
         </div>
+        <div class="noGroup" v-if="insuranceList.length===0">
+            没有保险信息
+        </div>
         <transition name="slide">
             <div class="select-content" v-if="isShow">
                 <div class="mask" @click="selectShow($event)"></div>
@@ -540,6 +543,12 @@ export default {
             }
 
         }
+    }
+    .noGroup{
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin-top: 40px;
     }
 }
 </style>

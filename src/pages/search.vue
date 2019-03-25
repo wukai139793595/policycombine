@@ -60,7 +60,7 @@ export default {
             postQueryPolicy({
                 org_id: '32',
                 entrance: 1,
-                keywords: this.keywords,
+                keywords: this.keywords.trim(),
                 page: this.page,
                 limit: this.limit,
                 group_id: this.groupId || ""
