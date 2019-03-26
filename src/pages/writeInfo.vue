@@ -144,7 +144,7 @@
             <qrCode 
                 :qr_code='qr_code'
                 :amount= 'amount'
-                :chooseWay = 'chooseWay'
+                :chooseWay = 'submitInfoObj.chooseWay'
                 :orderId = 'orderId'
                 :backUrl = 'backUrl'
             />
@@ -152,13 +152,15 @@
     </div>
 </template>
 <script>
-import {postWallet, postCreateOrder, postPay,postCcbPay } from '@/api/api.js'
+import {postWallet, postCreateOrder, postPay,postCcbPay,postCcbPayAli,postCcbPayWx } from '@/api/api.js'
 import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr} from '@/util/index.js'
+import kitUtils from '@/util/kitUtils.js'
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
 export default {
     data () {
         return {
+            ccbType: 16,  //建行支付订单type
             checkSelectAll: 0,
             selectedPolicy:{},
             startDatePicker: this.beginDate(),  
@@ -177,7 +179,7 @@ export default {
             gameEndTime: '',
             submitInfoObj: {
                 sex: '0',
-                chooseWay: 'wxChoose',
+                chooseWay: 'aliChoose',
                 name: '',
                 selectCertificate: '',  //用户选择的证件类型
                 certificateValue: '',    //证件号码
@@ -248,6 +250,7 @@ export default {
         }
     },
     methods: {
+        //日历组件设置不可选时间
         beginDate () {
             var that = this;
             return {
@@ -255,11 +258,12 @@ export default {
                     if (that.submitInfoObj.endTime) {
                         return time.getTime() > new Date(that.submitInfoObj.endTime) 
                     } else {
-                        return time.getTime() < Date.now()
+                        return time.getTime() < new Date(that.gameStartTime)
                     }
                 }
             }
         },
+        //日历组件设置不可选时间
         processDate () {
             var that = this;
             return {
@@ -268,7 +272,7 @@ export default {
                         var preDate = GetTheDateStr(that.submitInfoObj.startTime, -1);
                         return time.getTime() < new Date(preDate);
                     } else {
-                        return time.getTime() < that.gameStartTime
+                        return time.getTime() < new Date(that.gameStartTime)
                     }
                 }
             }
@@ -287,11 +291,13 @@ export default {
             //#endregion
             this.submitInfoObj[arguments[1]] = event;
             sessionStorage.setItem('submitInfoObj', JSON.stringify(this.submitInfoObj));
+            // console.log(this.submitInfoObj)
             this.checkSubmit();
         },
         infoInput (event) {
             this.submitInfoObj[arguments[1]] = event.target.value;
             sessionStorage.setItem('submitInfoObj', JSON.stringify(this.submitInfoObj));
+            // console.log(this.submitInfoObj)
             this.checkSubmit();            
         },
         changePayWay (event, payWay) {   //改变支付渠道
@@ -327,8 +333,9 @@ export default {
         createOrder () {     //创建订单函数
             var that = this;
             var users = new Array(this.selectArr.length || 0);
-            if (sessionStorage.getItem('isSelectAll') == 1) {
+            if (sessionStorage.getItem('isSelectAll') === 'true') {
                 users = [];
+                this.checkSelectAll = 1;
             } else {
                 this.selectArr.forEach((ele, ind) => {
                     users[ind] = {
@@ -339,11 +346,13 @@ export default {
                         birthday: ele.birthday
                     }
                 })
+                this.checkSelectAll = 0 ;
             }
             var data = {
                 ssid: this.ssid,
                 // org_id: 1,
                 // entrance: 1,  //该参数已删除
+                check: this.checkSelectAll,
                 event_group_id: this.$route.query.groupId,
                 id: this.$route.query.policyId,
                 begin_time: this.submitInfoObj.startTime,
@@ -360,31 +369,67 @@ export default {
                 }
             };
             //创建订单
-            console.log('users',users);
+            // console.log('users',users);
+            console.log('personInfo',this.submitInfoObj)
             postCreateOrder(data)
             .then((res) => {
                 console.log('createPay',res)
                 if (res.data.errcode === 0) {
+                    sessionStorage.removeItem('sessionSelectArr');
+                    sessionStorage.removeItem('submitInfoObj');
+                    sessionStorage.removeItem('groupId');
+                    sessionStorage.removeItem('startTime');
+                    sessionStorage.removeItem('endTime');
+                    sessionStorage.removeItem('isSelectAll');
+                    sessionStorage.removeItem('selectedPolicy');
+                    this.$store.commit('changeUser',[]);  //创建订单后清除数据
                     this.orderId = res.data.order_id;
+
+                    let API_URL = location.protocol || 'http:';
+                    if (/^dev-/.test(location.hostname) || /^localhost/.test(location.hostname)) {
+                        API_URL += '//dev-'
+                    } else if (/^test-/.test(location.hostname)) {
+                        API_URL += '//test-'
+                    } else {
+                        API_URL += '//'
+                    }                    
                     if (this.submitInfoObj.chooseWay === 'balanceChoose') {
                         return postPay({
                             ssid: this.ssid,
                             order_id: res.data.order_id
                         })
                     } else if (this.submitInfoObj.chooseWay === 'aliChoose'){
-                        return postCcbPay({
-                            ssid: this.ssid,
-                            orderid: res.data.order_id,
-                            type: 16,
-                            paytype: 'ali'                        
-                        })
+                        if (kitUtils.isMobileBrowser()) {
+                            window.location.href = `${API_URL}api.yunbisai.com/pay/ali?orderid=${res.data.order_id}&type=2`
+                            // return postCcbPayAli({
+                            //     ssid: this.ssid,
+                            //     orderid: res.data.order_id,
+                            //     type: this.ccbType                       
+                            // })
+                        } else {
+                            return postCcbPay({
+                                ssid: this.ssid,
+                                orderid: res.data.order_id,
+                                type: this.ccbType,
+                                paytype: 'ali'                                
+                            })
+                        }
                     } else if (this.submitInfoObj.chooseWay === 'wxChoose') {
-                        return postCcbPay({
-                            ssid: this.ssid,
-                            orderid: res.data.order_id,
-                            type: 16,
-                            paytype: 'wx'                        
-                        })                        
+                        if (kitUtils.isMobileBrowser()) {
+                            window.location.href = `${API_URL}api.yunbisai.com/pay/wx?orderid=${res.data.order_id}&type=2`
+                            // return postCcbPayWx({
+                            //     ssid: this.ssid,
+                            //     orderid: res.data.order_id,
+                            //     type: this.ccbType                       
+                            // })
+                        } else {
+                            return postCcbPay({
+                                ssid: this.ssid,
+                                orderid: res.data.order_id,
+                                type: this.ccbType,
+                                paytype: 'wx'                                
+                            })
+                        }                       
                     } 
                 } else {
                     this.$message.error(res.data.msg);
@@ -395,14 +440,6 @@ export default {
             // 余额支付成功和建行二维码url返回
             .then((res) => {
                 if (res.data.errcode === 0 || res.data.error === 0) {
-                    sessionStorage.removeItem('sessionSelectArr');
-                    sessionStorage.removeItem('submitInfoObj');
-                    sessionStorage.removeItem('groupId');
-                    sessionStorage.removeItem('startTime');
-                    sessionStorage.removeItem('endTime');
-                    sessionStorage.removeItem('isSelectAll');
-                    sessionStorage.removeItem('selectedPolicy');
-                    this.$store.commit('changeUser',[]);  //创建订单后清除数据
                     if (this.submitInfoObj.chooseWay === 'balanceChoose') {
                         this.$alert('余额支付成功', '提示', {
                             confirmButtonText: '确定',
@@ -416,7 +453,11 @@ export default {
                         console.log(this.submitInfoObj.chooseWay,res)
                         this.qr_code = res.data.datArr.qr_code;
                         this.amount = res.data.datArr.amount;
-                        this.readyPay = true;
+                        if (kitUtils.isMobileBrowser()) {
+                            window.location.replace(res.data.datArr.qr_code);
+                        } else {
+                            this.readyPay = true;
+                        }
                     }   
                 } else {
                     this.$message.error(res.data.msg)
@@ -439,6 +480,7 @@ export default {
         },
         initData () {
             this.ssid = this.$cookie.get('ssid');
+            this.ccbType = kitUtils.isMobileBrowser() ? 2 : 16;
             this.selectedPolicy =  JSON.parse(sessionStorage.getItem('selectedPolicy')) || {};
             // 单笔金额  需要除以100
             this.oneCost = (Number(this.$route.query.oneCost)/100).toFixed(2);

@@ -17,7 +17,7 @@
                     <div class="person-list" v-for="(item,index) in noPolicyPerson" :key="index">
                         <div class="img-wrap">
                             <div class="img-box" @click="selectPerson($event, index)">
-                                <img src="../assets/icon/choose-square.png" alt="" v-if="hasSelect(item.idcard)">
+                                <img src="../assets/icon/choose-square.png" alt="" v-if="isSelectAll || hasSelect(item.idcard)">
                                 <img src="../assets/icon/square.png" alt="" v-else>
                             </div>
                             <div class="name-wrap">
@@ -34,7 +34,7 @@
         </div>
         <div class="submit-wrap">
             <div class="select-all" @click="selectAll($event)">
-                <img src="../assets/icon/choose-square.png" alt="" v-if="selectArr.length >= noPolicyPerson.length">
+                <img src="../assets/icon/choose-square.png" alt="" v-if="isSelectAll">
                 <img src="../assets/icon/square.png" alt="" v-else>
                 <span>全选</span>
             </div>
@@ -147,12 +147,13 @@ export default {
                 ssid: this.ssid
             }).then(res => {
                 if (res.data.errcode === 0) {
-                    this.noPolicyPerson.push(...res.data.list);
+                    this.noPolicyPerson=JSON.parse(JSON.stringify(res.data.list));
                     this.total = res.data.total;
-                    sessionStorage.setItem('sessionSelectArr', JSON.stringify(this.noPolicyPerson));
+                    sessionStorage.setItem('sessionSelectArr', JSON.stringify(res.data.list));
                     sessionStorage.setItem('isSelectAll', true);
-                    this.$store.commit('changeUser', this.noPolicyPerson);
+                    this.$store.commit('changeUser', JSON.parse(JSON.stringify(res.data.list)));
                     this.isSelectAll = true;
+                    // console.log(`selectArr:`,this.selectArr,`total:`,this.total);
                 } else {
                     this.$message.error(res.data.msg)
                 }
@@ -194,9 +195,15 @@ export default {
             if (flag) {
                 this.selectArr.splice(i, 1);
                 this.isSelectAll = false;
+                sessionStorage.removeItem('isSelectAll');
             }else {
                 this.selectArr.push(person);
+                if (this.total === this.selectArr.length) {
+                    this.isSelectAll = true;
+                    sessionStorage.setItem('isSelectAll', true);
+                }
             }
+            console.log("noPolicyPerson",this.noPolicyPerson)
             console.log(this.selectArr)
             sessionStorage.setItem('sessionSelectArr', JSON.stringify(this.selectArr));
             this.$store.commit('changeUser', this.selectArr);
@@ -222,6 +229,7 @@ export default {
                 sessionStorage.removeItem('isSelectAll');
                 this.$store.commit('changeUser', [])
                 this.isSelectAll = false;
+                console.log(`selectArr:`,this.selectArr,`total:`,this.total);
             }
         },
         // 跳转到购买页

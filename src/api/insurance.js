@@ -45,7 +45,8 @@ if (location.host === '192.168.2.81:3000' ) {
                 header: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
                     'Cookie': 'e9hbliskas76gss1oh24l2hui4'
-                }
+                },
+                timeout: 5e3
             }).then(res => {
                 resolve(res);
             }).catch(err => {

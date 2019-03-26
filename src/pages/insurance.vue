@@ -13,9 +13,10 @@
             </div>
         </div>
         <div class="search">
-            <div class="input" @click="toSearch($event)">
-                <img src="../assets/icon/search-icon.png" alt="">
-                <span>搜索</span>
+            <div class="input" >
+                <img src="../assets/icon/search-icon.png" alt="" @click='queryKeyWords($event)'>
+                <input class='search-words' type='text' placeholder='请输入姓名/小组/赛事' v-model='keywords' @keyup.enter='queryKeyWords($event)'/>
+               
             </div>
         </div>
         <div class="scroll-container">
@@ -53,7 +54,7 @@
                             :placeholder="today|moment('YYYY-MM-DD')"
                             format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd"
-
+                            :picker-options="startDatePicker" 
                             >
                         </el-date-picker>
                         <!-- <div class="time-start">2019-02-18</div> -->
@@ -64,7 +65,7 @@
                             :placeholder="today|moment('YYYY-MM-DD')"
                             format="yyyy-MM-dd"
                             value-format="yyyy-MM-dd"
-
+                            :picker-options='endDatePicker'
                             >
                         </el-date-picker>
                     </div>
@@ -90,10 +91,13 @@ import Scroll from '@/components/scroll.vue'
 import personInfo from '@/components/personInfo.vue'
 import Vue from 'vue'
 import {postQueryPolicy,postPolicyCancel} from '@/api/insurance.js'
-import {GetUrlParam} from '@/util/index.js'
+import {GetUrlParam,GetTheDateStr} from '@/util/index.js'
 export default {
     data () {
         return {
+            keywords:'',
+            startDatePicker: this.beginDate(),  
+            endDatePicker:this.processDate(),
             startTime: '',
             endTime: '',
             isClock: true, //请求数据锁
@@ -163,7 +167,27 @@ export default {
         personInfo
     },
     methods: {
-
+        beginDate () {
+            var that = this;
+            return {
+                disabledDate (time) {
+                    if (that.endTime) {
+                        return time.getTime() > new Date(that.endTime)
+                    }
+                }
+            }
+        },
+        processDate () {
+            var that = this;
+            return {
+                disabledDate (time) {
+                    if (that.startTime) {
+                        var preDate = GetTheDateStr(that.startTime, -1);
+                        return time.getTime() < new Date(preDate);
+                    }
+                }
+            }
+        },
         initData () {
             //按页数进行查保
             this.isClock = true;
@@ -176,6 +200,7 @@ export default {
                 state: this.state,
                 page: this.page,
                 limit: this.limit,
+                keywords: this.keywords.trim(),
                 group_id: this.groupId || ""
             })
             .then((res) => {
@@ -242,11 +267,24 @@ export default {
             this.insuranceList[index].state = 3;
             console.log('insurance',this.insuranceList[index].state)
         },
+        queryKeyWords () {
+            this.page= 1,
+            this.limit= 10,
+            this.total= 0,
+            this.totalPage= 0, 
+            this.insuranceList = [];
+            // console.log('myScroll',this.$refs.myScroll)
+            this.$refs.myScroll.$el.scrollTo(0,0);
+            // this.$refs.myScroll.refreshDone();
+            // this.$refs.myScroll.noMore = false;
+            this.initData();            
+        },
         // 重置按钮
         toReset (event) {
             this.state = '';
             this.startTime = '';
             this.endTime = '';
+            this.keywords= '';
         },
         // 确认按钮
         toSubmit (event) {
@@ -334,10 +372,17 @@ export default {
                 vertical-align: middle;
                 margin-left: 40px;
             }
-            span{
+            .search-words{                
+                position: relative;
                 font-size: 28px; 
-                color: #999;
+                color: #666;
                 margin-left: 20px;
+                border: none;
+                outline: none;
+                background-color: transparent;
+            }
+            .search-words::placeholder{
+                color: #aaa;
             }
         }
     }

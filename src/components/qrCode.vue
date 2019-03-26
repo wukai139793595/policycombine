@@ -75,15 +75,19 @@
                     event_id: this.$route.query.event_id
                   }
                 })
-
               }, 3e3)
-
-
             } else if (res.data.code === 'waiting') {
               console.log(`orderid:${that.orderId};waiting;times:${that.times}`)
               that.times -= 1;
               if (that.times > 0) {
                 that.timeId = setTimeout(that.pollingOrder, 3000)
+              } else {
+                that.$router.replace({
+                  path: '/insurance',
+                  query:{
+                    event_id: this.$route.query.event_id
+                  }
+                })                
               }
             } else {
 
@@ -109,6 +113,8 @@
         //返回到管理页面
         turnBack (event) {
           // changeLocationReplace(this.backUrl)
+          this.times = 0;
+          clearTimeout(this.timeId);
           this.$router.replace({
             path: '/insurance',
             query: {

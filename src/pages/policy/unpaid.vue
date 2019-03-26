@@ -56,8 +56,8 @@
                 </div>
                 <div class="sex-wrap">
                     <span class="name">性别</span>
-                    <el-radio v-model="sex" label="0" disabled>男</el-radio>
-                    <el-radio v-model="sex" label="1" disabled>女</el-radio>                    
+                    <el-radio v-model="sex" label="1" disabled>男</el-radio>
+                    <el-radio v-model="sex" label="2" disabled>女</el-radio>                    
                 </div>
                 <div class="phone-wrap">
                     <span class="name">电话</span>
@@ -152,10 +152,12 @@
 <script>
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
-import {postCancelOrder,postCcbPay} from '@/api/api.js'
+import {postCancelOrder,postCcbPay,postCcbPayAli,postCcbPayWx} from '@/api/api.js'
+import kitUtils from '@/util/kitUtils.js'
     export default {
         data () {
             return {
+                ccbType: 16,
                 totalAmount: '',
                 count: 0,
                 headName: '未支付订单',
@@ -165,8 +167,8 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
                 backUrl: '',
                 amount: 0,
                 wallet: 0,
-                sex: '0',
-                chooseWay: 'wxChoose',
+                sex: '1',
+                chooseWay: 'aliChoose',
                 name: '',
                 selectCertificate: '',  //用户选择的证件类型
                 certificateValue: '',    //证件号码
@@ -264,28 +266,45 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
             },
             toSubmit (event) {
                 let tempWap = '';
-                if (this.chooseWay === 'aliChoose') {
-                    tempWap = 'ali'
-                } else if(this.chooseWay === 'wxChoose') {
-                    tempWap = 'wx'
-                }
-                postCcbPay({
-                    ssid: this.ssid,
-                    orderid: this.orderId,
-                    type: 16,
-                    paytype: tempWap                     
-                }).then(res => {
-                    console.log('CcbPay',res)
-                    if (res.data.error === 0) {
-                        this.qr_code = res.data.datArr.qr_code;
-                        this.amount = res.data.datArr.amount;
-                        this.readyPay = true;
-                    } else {
-                        this.$message.error(res.data.msg)
+                let payFunc = null;
+                let API_URL = location.protocol || 'http:';
+                if (/^dev-/.test(location.hostname) || /^localhost/.test(location.hostname)) {
+                    API_URL += '//dev-'
+                } else if (/^test-/.test(location.hostname)) {
+                    API_URL += '//test-'
+                } else {
+                    API_URL += '//'
+                }                  
+                if (kitUtils.isMobileBrowser()) {
+                    if (this.chooseWay === 'aliChoose') {
+                        window.location.href = `${API_URL}api.yunbisai.com/pay/ali?orderid=${this.orderId}&type=2`
+                    } else if(this.chooseWay === 'wxChoose') {
+                        window.location.href = `${API_URL}api.yunbisai.com/pay/wx?orderid=${this.orderId}&type=2`
                     }
-                }, err => {
-                        this.$message.error('网络错误')
-                })
+                } else {
+                    if (this.chooseWay === 'aliChoose') {
+                        tempWap = 'ali'
+                    } else if(this.chooseWay === 'wxChoose') {
+                        tempWap = 'wx'
+                    }
+                    postCcbPay({
+                        ssid: this.ssid,
+                        orderid: this.orderId,
+                        type: this.ccbType,
+                        paytype: tempWap                     
+                    }).then(res => {
+                        console.log('CcbPay',res)
+                        if (res.data.error === 0) {
+                            this.qr_code = res.data.datArr.qr_code;
+                            this.amount = res.data.datArr.amount;
+                            this.readyPay = true;
+                        } else {
+                            this.$message.error(res.data.msg)
+                        }
+                    }, err => {
+                            this.$message.error('网络错误')
+                    })
+                }
             }
             // infoChange () {   //内容改变事件函数
             //     //#region 
@@ -297,6 +316,7 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
         },
         created () {
             this.ssid = this.$cookie.get('ssid');
+            this.ccbType = kitUtils.isMobileBrowser() ? 2 : 16;
             console.log(this.$router,this.$route)
             // 获取用户余额
             // postWallet({
@@ -330,7 +350,7 @@ import {postCancelOrder,postCcbPay} from '@/api/api.js'
                     vm.$data.startTime = tempMeta.list.start_date;
                     vm.$data.endTime = tempMeta.list.end_date;
                     vm.$data.name = tempMeta.list.policy_holderd_name;
-                    vm.$data.selectCertificate = vm.certificateArr[tempMeta.list.policy_holderd_card_type];
+                    vm.$data.selectCertificate = tempMeta.list.policy_holderd_card_type;
                     vm.$data.certificateValue = tempMeta.list.policy_holderd_card;
                     vm.$data.sex = tempMeta.list.policy_holderd_sex;
                     vm.$data.phone = tempMeta.list.policy_holderd_tel;
