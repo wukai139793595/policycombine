@@ -22,6 +22,9 @@
             <span>保险金额:</span>
             <span>{{real_amount | divisionHundred}}元</span>
         </div>
+        <div class="insurance-detail" @click="toInsuranceDetail($event)">
+            详情
+        </div>
         <div class="surrender-normal" :class="{surrender:(state == 2)}" @click="toSurrender($event)">
             退保
         </div>       
@@ -67,9 +70,23 @@ import {postPolicyCancel} from '@/api/insurance.js'
             insured_id: {
                 type: String,
                 default: ''
+            },
+            policy_no: {
+                type: String,
+                default: ''
             }
         },
         methods: {
+            // 去保险详情页面
+            toInsuranceDetail (event, index) {
+                this.$router.push({
+                    path: '/insuranceDetail',
+                    query: {
+                        insured_id: this.insured_id,
+                        policy_no: this.policy_no
+                    }
+                })
+            },
             // 查看保险开始时间是否大于今天
             checkStartTime () {
                 let nowTime = Date.now();
@@ -193,23 +210,41 @@ import {postPolicyCancel} from '@/api/insurance.js'
             font-weight: bold;
         }
     }
+    .insurance-detail{
+        position: absolute;
+        bottom: 30px;
+        right: 160px;
+        width: 140px;
+        height: 50px;
+        background-color: #fff;
+        border-radius: 25px;
+        font-size: 30px;
+        color: #000;
+        text-align: center;
+        line-height: 50px;
+        font-weight: bold;  
+        border: 2px solid #000; 
+
+    }
     .surrender-normal{
         position: absolute;
         bottom: 30px;
         right: 4px;
         width: 140px;
         height: 50px;
-        background-color: #eee;
+        background-color: #fff;
         border-radius: 25px;
         font-size: 30px;
-        color: #666;
+        color: #9a9a9a;
         text-align: center;
         line-height: 50px;
         font-weight: bold;
+        border: 2px solid #9a9a9a; 
+
     }
     .surrender{
-        background-color: #3399ff;   
-        color: #fff;             
+        background-color: #fff;   
+        color: #000;             
     }
 }
     

@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import insurance from '@/pages/insurance'
-import search from '@/pages/search'
+import insuranceDetail from '@/pages/insurance/insuranceDetail.vue'
+// import search from '@/pages/search'
 
 Vue.use(Router)
 
@@ -12,10 +13,15 @@ export default new Router({
       name: 'insurance',
       component: insurance
     },{
-      path: '/search',
-      name: 'search',
-      component: search
+      path: '/insuranceDetail',
+      name: 'insuranceDetail',
+      component: insuranceDetail
     }
+    // ,{
+    //   path: '/search',
+    //   name: 'search',
+    //   component: search
+    // }
   ]
 
 })

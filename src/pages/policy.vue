@@ -6,7 +6,7 @@
             </div>
             <div class="title">购买保险</div>
         </div> -->
-        <ls-head :headName="headName"/>
+        <ls-head :headName="headName" :goFirst="true"/>
         <div class="scroll-wrap">
             <scroll @refresh="refresh" @loadmore="loadmore">
                 <div class="group-wrap">
@@ -17,14 +17,14 @@
                             </div>
                             <div class="group-info">
                                 <span>总人数：{{item.apply}}人，</span>
-                                <span>未交保险：{{item.apply-item.policy}}人</span>
+                                <span>未交保险：{{(item.apply-item.policy)> 0 ? (item.apply-item.policy) : 0}}人</span>
                             </div>
                         </div>
                         <div class="look-buy">
                             <div class="look-btn" @click="toLookPolicy($event, index)">
                                 查看
                             </div>
-                            <div class="buy-btn" @click="toBuyPolicy($event, index)">
+                            <div class="buy-btn" @click="toBuyPolicy($event, index)" v-show="item.apply-item.policy>0">
                                 购买
                             </div>
                         </div>
@@ -52,20 +52,20 @@ export default {
             totalPage: 1, //总页数
             isClock: false, //网络请求锁 
             groupArr:[
-        //         {
-        //         "event_group_id":"20058", //小组id
-        //         "groupname":"I",  //小组名
-        //         "ROW_NUMBER":"1",
-        //         "apply":3,  //报名人数
-        //         "policy":1  //已保险人数
-        //         },
-        //         {
-        //         "event_group_id":"20059",
-        //         "groupname":"甲组",
-        //         "ROW_NUMBER":"2",
-        //         "apply":0,
-        //         "policy":0
-        //         }
+                {
+                "event_group_id":"20058", //小组id
+                "groupname":"I",  //小组名
+                "ROW_NUMBER":"1",
+                "apply":3,  //报名人数
+                "policy":1  //已保险人数
+                },
+                {
+                "event_group_id":"20059",
+                "groupname":"甲组",
+                "ROW_NUMBER":"2",
+                "apply":0,
+                "policy":0
+                }
            ]
         }
     },
@@ -120,6 +120,7 @@ export default {
             if (sessionStorage.getItem('groupId')) {
                 if (sessionStorage.getItem('groupId') != groupId) {
                     sessionStorage.setItem('groupId', groupId);
+                    sessionStorage.setItem('groupInfo', JSON.stringify(this.groupArr[index]));
                     sessionStorage.removeItem('sessionSelectArr');
                     sessionStorage.removeItem('startTime');
                     sessionStorage.removeItem('endTime');
@@ -128,6 +129,7 @@ export default {
                 }
             } else {
                 sessionStorage.setItem('groupId', groupId);
+                sessionStorage.setItem('groupInfo', JSON.stringify(this.groupArr[index]));
 
             }
             postCheckOrder({
@@ -205,6 +207,8 @@ export default {
         if (this.$route.query.event_id) {
             this.eventID = this.$route.query.event_id;
         }
+        console.log("$router",this.$router);
+        console.log("$route",this.$route);
         console.log(this.eventID)
         this.ssid = this.$cookie.get('ssid');
         this.initData();
@@ -251,7 +255,8 @@ export default {
                 .look-buy{
                     // display: flex;
                     // justify-content: space-between;
-                    
+                    text-align: left;
+                    width: 200px;
                     .look-btn{
                         width: 70px;
                         height: 40px;

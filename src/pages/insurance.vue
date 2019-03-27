@@ -34,6 +34,8 @@
                         :real_amount='item.real_amount'
                         :order_id='item.order_id'
                         :insured_id='item.insured_id'
+                        :policy_no='item.policy_no'
+                        
                         />
                 </div>            
             </scroll>
@@ -45,7 +47,7 @@
             <div class="select-content" v-if="isShow">
                 <div class="mask" @click="selectShow($event)"></div>
                 <div class="select-box">
-                    <div class="select-hint">保险起止时间</div>
+                    <div class="select-hint">保险开始时间</div>
                     <div class="time-wrap">
                         <el-date-picker
                             class="data-picker"
@@ -57,9 +59,8 @@
                             :picker-options="startDatePicker" 
                             >
                         </el-date-picker>
-                        <!-- <div class="time-start">2019-02-18</div> -->
-                        <span class="line"></span>
-                        <el-date-picker
+                        <!-- 
+                        <span class="line"></span><el-date-picker
                             v-model="endTime"
                             type="date"
                             :placeholder="today|moment('YYYY-MM-DD')"
@@ -67,7 +68,7 @@
                             value-format="yyyy-MM-dd"
                             :picker-options='endDatePicker'
                             >
-                        </el-date-picker>
+                        </el-date-picker>-->
                     </div>
                     <div class="status-hint">
                         状态
@@ -76,6 +77,19 @@
                         <div v-for="(ele, ind) in selectList" :key="ind" :class="{isSelect: isSelectArr[ind] == state}" @click="selectChange($event, ind)">
                             {{selectList[ind]}}
                         </div>
+                    </div>
+                    <div class="classify-hint">
+                        险种
+                    </div>
+                    <div class="classify-wrap">
+                        <el-select v-model="classifyValue" placeholder="请选择">
+                            <el-option
+                            v-for="item in classifyList"
+                            :key="item.id"
+                            :label="item.risk_name"
+                            :value="item.id">
+                            </el-option>
+                        </el-select>                      
                     </div>
                     <div class="btn-wrap">
                         <div class="reset" @click="toReset($event)">重置</div>
@@ -91,13 +105,15 @@ import Scroll from '@/components/scroll.vue'
 import personInfo from '@/components/personInfo.vue'
 import Vue from 'vue'
 import {postQueryPolicy,postPolicyCancel} from '@/api/insurance.js'
+import {postInsuranceClassify} from '@/api/api.js'
 import {GetUrlParam,GetTheDateStr} from '@/util/index.js'
+
 export default {
     data () {
         return {
             keywords:'',
             startDatePicker: this.beginDate(),  
-            endDatePicker:this.processDate(),
+            // endDatePicker:this.processDate(),
             startTime: '',
             endTime: '',
             isClock: true, //请求数据锁
@@ -106,18 +122,21 @@ export default {
             limit: 10,
             total: 0,
             totalPage: 0,
-            state: '',     
+            state: '',    
+            classifyValue: '', 
             // 设置不可选时间
 
             selectList: [
                 '全部',
-                '已交保',
-                '已退保'
+                '成功',
+                '退保',
+                '失败'
             ],
             isSelectArr: [
                 '',
                 '2',
-                '3'
+                '3',
+                '4'
                 // false,
                 // true,
                 // false
@@ -159,6 +178,69 @@ export default {
                 //     "real_amount":1000,  //应付金额，实际金额为 real_amount/100
                 //     "insured_name":"方亮"
                 // }
+            ],
+            "classifyList":[
+            //         {
+            //             "id":"1",  //险种id
+            //             "risk_code":"EAA",  //险种代码
+            //             "risk_name":"个人意外险",  //险种名字
+            //             "periodmin":"1",  //保险最小期限
+            //             "remark":"重伤：10万",  //备注
+            //             "amount":"200600", //保额
+            //             "premium":"1000",  //保险费
+            //             "periodmax":"3",  //保险最大期限
+            //             "ROW_NUMBER":"1" 
+            //         },
+            //         {
+            //             "id":"2",
+            //             "risk_code":"EAA",
+            //             "risk_name":"个人意外险",
+            //             "periodmin":"4",
+            //             "amount":"200600",
+            //             "premium":"1500",
+            //             "periodmax":"5",
+            //             "ROW_NUMBER":"2"
+            //         },
+            //         {
+            //             "id":"3",
+            //             "risk_code":"EAA",
+            //             "risk_name":"个人意外险",
+            //             "periodmin":"6",
+            //             "amount":"200600",
+            //             "premium":"2000",
+            //             "periodmax":"7",
+            //             "ROW_NUMBER":"3"
+            //         },
+            //         {
+            //             "id":"4",
+            //             "risk_code":"EAC",
+            //             "risk_name":"团体意外险",
+            //             "periodmin":"1",
+            //             "amount":"120600",
+            //             "premium":"450",
+            //             "periodmax":"3",
+            //             "ROW_NUMBER":"4"
+            //         },
+            //         {
+            //             "id":"5",
+            //             "risk_code":"EAC",
+            //             "risk_name":"团体意外险",
+            //             "periodmin":"4",
+            //             "amount":"120600",
+            //             "premium":"900",
+            //             "periodmax":"5",
+            //             "ROW_NUMBER":"5"
+            //         },
+            //         {
+            //             "id":"6",
+            //             "risk_code":"EAC",
+            //             "risk_name":"团体意外险",
+            //             "periodmin":"6",
+            //             "amount":"120600",
+            //             "premium":"1400",
+            //             "periodmax":"7",
+            //             "ROW_NUMBER":"6"
+            //         }
             ]
         }
     },
@@ -177,16 +259,31 @@ export default {
                 }
             }
         },
-        processDate () {
-            var that = this;
-            return {
-                disabledDate (time) {
-                    if (that.startTime) {
-                        var preDate = GetTheDateStr(that.startTime, -1);
-                        return time.getTime() < new Date(preDate);
-                    }
+        // processDate () {
+        //     var that = this;
+        //     return {
+        //         disabledDate (time) {
+        //             if (that.startTime) {
+        //                 var preDate = GetTheDateStr(that.startTime, -1);
+        //                 return time.getTime() < new Date(preDate);
+        //             }
+        //         }
+        //     }
+        // },
+        getClassify () {
+            postInsuranceClassify({
+                ssid: this.ssid
+            }).then(res => {
+                if (res.data.errcode === 0) {
+                    this.$nextTick(() => {
+                        this.classifyList = res.data.list
+                    })
+                } else {
+                    this.$message.error(res.data.msg)
                 }
-            }
+            }, err => {
+                this.$message.error('网络错误')
+            })
         },
         initData () {
             //按页数进行查保
@@ -200,6 +297,7 @@ export default {
                 state: this.state,
                 page: this.page,
                 limit: this.limit,
+                type: this.classifyValue,
                 keywords: this.keywords.trim(),
                 group_id: this.groupId || ""
             })
@@ -284,7 +382,8 @@ export default {
             this.state = '';
             this.startTime = '';
             this.endTime = '';
-            this.keywords= '';
+            this.classifyValue = '';
+            // this.keywords= '';
         },
         // 确认按钮
         toSubmit (event) {
@@ -303,6 +402,7 @@ export default {
         // this.groupId = GetUrlParam("groupId").split('#')[0];
         this.groupId = sessionStorage.getItem('insuranceGroupId');
         console.log(this.groupId)
+        this.getClassify();
         this.initData();
     }
 }
@@ -326,8 +426,10 @@ export default {
         margin-bottom: 30px;
         box-shadow: 4px 4px 10px #eee;
         .turn-back{
-            width: 40px;
-            height: 40px;
+            position: relative;
+            top: 4px;
+            width: 34px;
+            height: 34px;
             img{
                 width: 100%;
                 height: 100%;
@@ -340,13 +442,14 @@ export default {
         .select{
             height: 100%;
             img{
-                width: 40px;
-                height: 40px;
-                vertical-align: top;
+                width: 34px;
+                height: 34px;
+                vertical-align: middle;
             }
             span{
                 font-size: 30px;
                 color: #676767;
+                vertical-align: middle;
             }
         }
     }
@@ -544,10 +647,14 @@ export default {
             }
             .type-wrap{
                 display: flex;
-                justify-content: space-around;
+                justify-content: space-between;
                 margin-top: 30px;
+                margin-bottom: 40px;
+                box-sizing: border-box;
+                padding-left: 40px;
+                padding-right: 40px;
                 div{
-                    width: 160px;
+                    width: 120px;
                     height: 60px;
                     font-size: 30px;
                     color: #666;
@@ -561,6 +668,17 @@ export default {
                     background-color: #3399ff;
                     color: #fff;
                 }
+            }
+            .classify-hint{
+                font-size: 30px; 
+                color: #333;
+                font-weight: bold;
+                text-indent: 40px;                
+            }
+            .classify-wrap{
+                box-sizing: border-box;
+                padding-left: 40px;
+                margin-top: 30px;
             }
         }
         .btn-wrap{

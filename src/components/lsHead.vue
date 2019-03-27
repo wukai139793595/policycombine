@@ -6,10 +6,18 @@
         <div class="title">{{headName}}</div>
     </div>
 </template>
-
 <script>
     export default {
-        props:['headName'],
+        props: {
+            headName: {
+                type: String,
+                default: ''
+            },
+            goFirst: {
+                type: Boolean,
+                default: false
+            }
+        },
         methods: {
             turnBack (event) {
                 this.$router.go(-1);
@@ -34,7 +42,8 @@
         padding-top: 20px;
         text-align: center;
         position: relative;
-        line-height: 30px;        
+        line-height: 30px;   
+        background-color: #fff;     
         .turn-back{
             // position: absolute;
             // left: 24px;

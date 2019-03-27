@@ -39,8 +39,8 @@
                 <span>全选</span>
             </div>
             <div class="select-info">
-                <span>已选：{{selectArr.length}}人</span>
-                <span>合计：{{selectArr.length | totalMoney(oneCost)}}元</span>
+                <span>已选：{{personCount}}人</span>
+                <span>合计：{{personCount | totalMoney(oneCost)}}元</span>
             </div>
             <div class="submit" @click="toWriteInfo($event)">
                 购买
@@ -90,6 +90,13 @@ export default {
     computed: {
         selectArr() {    //客户选择要保险的人员
             return this.$store.state.selectArr
+        },
+        personCount () {
+            if (this.isSelectAll) {
+                return this.total;
+            } else {
+                return this.selectArr.length;
+            }
         }
     },
     methods: {
@@ -125,6 +132,9 @@ export default {
                 console.log(res)
                 if (res.data.errcode === 0) {                   
                     this.noPolicyPerson.push(...res.data.list);
+                    if (this.isSelectAll) {
+                        this.$store.commit('changeUser',JSON.parse(JSON.stringify(this.noPolicyPerson)))
+                    }
                     this.total = res.data.total;
                 }else {
                     this.$message.error(res.data.msg)
@@ -134,33 +144,33 @@ export default {
                 this.$message.error('网络错误')
             })
         },
-        getInfoAll () {
-            this.noPolicyPerson = [];
-            this.inputValue='';
-            this.page=1;
-            postNoPolicyPerson({
-                group_id: this.groupId,
-                // group_id: '20058',  //注：正式应改成参数
-                name: this.inputValue.trim(),
-                page: '',
-                limit:'',
-                ssid: this.ssid
-            }).then(res => {
-                if (res.data.errcode === 0) {
-                    this.noPolicyPerson=JSON.parse(JSON.stringify(res.data.list));
-                    this.total = res.data.total;
-                    sessionStorage.setItem('sessionSelectArr', JSON.stringify(res.data.list));
-                    sessionStorage.setItem('isSelectAll', true);
-                    this.$store.commit('changeUser', JSON.parse(JSON.stringify(res.data.list)));
-                    this.isSelectAll = true;
-                    // console.log(`selectArr:`,this.selectArr,`total:`,this.total);
-                } else {
-                    this.$message.error(res.data.msg)
-                }
-            },err => {
-                this.$message.error('网络错误')
-            })
-        },
+        // getInfoAll () {
+        //     this.noPolicyPerson = [];
+        //     this.inputValue='';
+        //     this.page=1;
+        //     postNoPolicyPerson({
+        //         group_id: this.groupId,
+        //         // group_id: '20058',  //注：正式应改成参数
+        //         name: this.inputValue.trim(),
+        //         page: "",
+        //         limit:'',
+        //         ssid: this.ssid
+        //     }).then(res => {
+        //         if (res.data.errcode === 0) {
+        //             this.noPolicyPerson=JSON.parse(JSON.stringify(res.data.list));
+        //             this.total = res.data.total;
+        //             sessionStorage.setItem('sessionSelectArr', JSON.stringify(res.data.list));
+        //             sessionStorage.setItem('isSelectAll', true);
+        //             this.$store.commit('changeUser', JSON.parse(JSON.stringify(res.data.list)));
+        //             this.isSelectAll = true;
+        //             // console.log(`selectArr:`,this.selectArr,`total:`,this.total);
+        //         } else {
+        //             this.$message.error(res.data.msg)
+        //         }
+        //     },err => {
+        //         this.$message.error('网络错误')
+        //     })
+        // },
         initData() {
             this.ssid = this.$cookie.get('ssid');
             this.oneCost = this.$route.query.oneCost;
@@ -168,18 +178,18 @@ export default {
             this.riskCode = this.$route.query.risk_code;
             var sessionSelectArr = [];
             if (sessionStorage.getItem('isSelectAll') === "true") {
-                this.getInfoAll()
-            } else {
-                if (sessionStorage.getItem('sessionSelectArr')) {
+                this.isSelectAll = true;
+            } 
+                
+            if (sessionStorage.getItem('sessionSelectArr')) {
                      sessionSelectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr'));
                      console.log(sessionSelectArr)
-                } 
-                this.$store.commit('changeUser', sessionSelectArr);            
-                
+                    this.$store.commit('changeUser', sessionSelectArr);            
+            } 
+            
 
-                this.getInfo();
-                console.log("groupId",this.groupId)
-            }
+            this.getInfo();
+            
         },
         selectPerson (event, index) {  //选择单个人操作
             let person = this.noPolicyPerson[index];
@@ -211,18 +221,11 @@ export default {
 
         selectAll (event) {   //选择全部操作
             if (!this.isSelectAll) {
-                this.getInfoAll();
+                this.isSelectAll = true;
+                this.$store.commit('changeUser', JSON.parse(JSON.stringify(this.noPolicyPerson)))
+                sessionStorage.setItem('sessionSelectArr', JSON.stringify(this.noPolicyPerson));
+                sessionStorage.setItem('isSelectAll', true);
 
-                // 全选已加载人员
-                // let tempArr = [];
-                // this.tempSelect = [];
-                // this.noPolicyPerson.forEach((ele, ind) => {
-                //     tempArr.push(ele);
-                //     this.tempSelect.push(ind);
-                // })
-                // sessionStorage.setItem('sessionSelectArr', JSON.stringify(tempArr));
-                // this.$store.commit('changeUser', tempArr)
-                // this.isSelectAll = true;
             } else {
                 this.tempSelect = [];
                 sessionStorage.removeItem('sessionSelectArr');
@@ -249,7 +252,8 @@ export default {
                     oneCost: this.$route.query.oneCost,
                     groupId: this.$route.query.groupId,
                     policyId: this.$route.query.policyId,
-                    event_id: this.$route.query.event_id
+                    event_id: this.$route.query.event_id,
+                    person_count: this.personCount
                 }
             })
         },
@@ -275,7 +279,6 @@ export default {
         }
     },
     created () {
-
         this.initData();
     },
     filters: {

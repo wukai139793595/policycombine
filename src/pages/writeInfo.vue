@@ -49,7 +49,7 @@
                 </div>
                 <div class="identify-wrap">
                     <span class="name">证件类型</span>
-                      <el-select v-model="submitInfoObj.selectCertificate" placeholder="请选择" @change="infoChange($event, 'selectCertificate')">
+                      <el-select v-model="submitInfoObj.selectCertificate" placeholder="请选择" @change="certificateChange($event, 'selectCertificate')">
                         <el-option
                         v-for="item in certificateArr"
                         :key="item.num"
@@ -60,12 +60,12 @@
                 </div>
                 <div class="name-wrap">
                     <span class="name">证件号</span>
-                    <input type="text" placeholder="输入投保人证件号" @input="infoInput($event)" v-model="submitInfoObj.certificateValue" ref="inputCertificate" maxlength="18">
+                    <input type="text" placeholder="输入投保人证件号" @blur="certificateBlur($event)" @input="infoInput($event)" v-model="submitInfoObj.certificateValue" ref="inputCertificate" maxlength="18">
                 </div>
                 <div class="sex-wrap">
                     <span class="name">性别</span>
-                    <el-radio v-model="submitInfoObj.sex" label="0" @change="infoChange($event, 'sex')">男</el-radio>
-                    <el-radio v-model="submitInfoObj.sex" label="1" @change="infoChange($event, 'sex')">女</el-radio>                    
+                    <el-radio v-model="submitInfoObj.sex" label="0" @change="infoChange($event, 'sex')" :disabled="sexDisabled">男</el-radio>
+                    <el-radio v-model="submitInfoObj.sex" label="1" @change="infoChange($event, 'sex')" :disabled="sexDisabled">女</el-radio>                    
                 </div>
                 <div class="phone-wrap">
                     <span class="name">电话</span>
@@ -90,7 +90,7 @@
             </div>
         </div>
         <div class="count-wrap">
-            <span class="count">参保人数：{{selectArr.length}}</span><span class="total-money">合计金额：{{(selectArr.length || 0)*oneCost}}</span>
+            <span class="count">参保人数：{{personCount}}</span><span class="total-money">合计金额：{{(personCount || 0)*oneCost}}</span>
         </div>
         <div class="pay-way">
             <p>请选择支付方式</p>
@@ -153,13 +153,15 @@
 </template>
 <script>
 import {postWallet, postCreateOrder, postPay,postCcbPay,postCcbPayAli,postCcbPayWx } from '@/api/api.js'
-import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr} from '@/util/index.js'
+import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr,Getsex} from '@/util/index.js'
 import kitUtils from '@/util/kitUtils.js'
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
 export default {
     data () {
         return {
+            personCount: 0,
+            sexDisabled: false,
             ccbType: 16,  //建行支付订单type
             checkSelectAll: 0,
             selectedPolicy:{},
@@ -250,6 +252,8 @@ export default {
         }
     },
     methods: {
+        // 根据身份证判断性别
+
         //日历组件设置不可选时间
         beginDate () {
             var that = this;
@@ -283,6 +287,25 @@ export default {
             } else {
                 this.couldSubmit = false;
             }         
+        },
+        //身份证类型改变
+        certificateChange (event) {
+            this.submitInfoObj[arguments[1]] = event;
+            sessionStorage.setItem('submitInfoObj', JSON.stringify(this.submitInfoObj));
+            // console.log(this.submitInfoObj)
+            this.checkSubmit();            
+            if (event == 1) {
+                this.sexDisabled = true;
+            } else {
+                this.sexDisabled = false;
+            }
+        },     
+        //证件号input失去焦点
+        certificateBlur (event) {
+            if (checkIdcard(event.target.value)) {
+                this.submitInfoObj.sex = Getsex(event.target.value);
+                sessionStorage.setItem('submitInfoObj', JSON.stringify(this.submitInfoObj));
+            }
         },
         infoChange (event) {   //内容改变事件函数
             //#region 
@@ -484,6 +507,7 @@ export default {
             this.selectedPolicy =  JSON.parse(sessionStorage.getItem('selectedPolicy')) || {};
             // 单笔金额  需要除以100
             this.oneCost = (Number(this.$route.query.oneCost)/100).toFixed(2);
+            this.personCount = this.$route.query.person_count;
             this.selectArr = JSON.parse(sessionStorage.getItem('sessionSelectArr')) || [];
             // 开始时间
              this.gameStartTime =sessionStorage.getItem('startTime') || "";

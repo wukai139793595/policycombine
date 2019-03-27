@@ -141,6 +141,10 @@ export default {
         },
         // 选择保险种类
         selectPolicy (event, index) {
+            if (this.groupInfo.apply - this.groupInfo.policy < 3) {
+                this.$message('团体险不能少于3人');
+                return 
+            }
             this.policy_id = this.policyArr[index].id;
             this.selectedIndex = index;
             sessionStorage.setItem('selectedPolicy', JSON.stringify(this.policyArr[index]));
@@ -188,8 +192,11 @@ export default {
         }
     },
     created() {
+        console.log("$router",this.$router);
+        console.log("$route",this.$route);
         this.ssid = this.$cookie.get('ssid');
         this.groupId = this.$route.query.groupId;
+        this.groupInfo = JSON.parse(sessionStorage.getItem('groupInfo')) || null;
         console.log('cookie.ssid:', this.ssid);
         this.initData();
     },

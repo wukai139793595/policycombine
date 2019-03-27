@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Qs from 'qs'
-axios.defaults.widthCredentials = true;
+axios.defaults.withCredentials = true;
 const API_URL = (function () {
     // 返回请求头，如http://dev等
     if (/^dev-/.test(location.host) || /^localhost/.test(location.host)) {
@@ -47,7 +47,8 @@ if (location.host === '192.168.2.81:3001' ) {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
                     'Cookie': 'e9hbliskas76gss1oh24l2hui4'
                 },
-                timeout: 5e3
+                timeout: 5e3,
+                withCredentials: true
             }).then(res => {
                 resolve(res);
             }).catch(err => {
@@ -66,7 +67,8 @@ if (location.host === '192.168.2.81:3001' ) {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
                     'Cookie': 'e9hbliskas76gss1oh24l2hui4'
                 },
-                timeout: 3e3
+                timeout: 3e3,
+                withCredentials: true
             }).then(res => {
                 resolve(res);
             }).catch(err => {
