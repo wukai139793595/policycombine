@@ -8,33 +8,37 @@
             </div>
         </div>
         <div class="event-wrap insu">
-            <div class="event-name ev-in">
-                <span>赛事名称</span>
-                <span>{{eventDetail.title}}</span>
-            </div>
-            <div class="group-name ev-in">
-                <span>小组名</span>
-                <span>{{eventDetail.groupname}}</span>
-            </div>
-            <div class="person-name ev-in">
-                <span>姓名</span><span>{{eventDetail.insured_name}}</span>
-            </div>
-            <div class="state ev-in">
-                <span>报名状态</span><span>{{}}</span>
+            <div class="insu-con">
+                <div class="event-name ev-in">
+                    <span>赛事名称</span>
+                    <span>{{eventDetail.title}}</span>
+                </div>
+                <div class="group-name ev-in">
+                    <span>小组名</span>
+                    <span>{{eventDetail.groupname}}</span>
+                </div>
+                <div class="person-name ev-in">
+                    <span>姓名</span><span>{{eventDetail.insured_name}}</span>
+                </div>
+                <div class="state ev-in">
+                    <span>报名状态</span><span>{{}}</span>
+                </div>
             </div>
         </div>
         <div class="insurance-wrap insu">
-            <div class="insurance ev-in">
-                <span>险种</span><span>{{eventDetail.risk_name}}</span>
-            </div>
-            <div class="insurance-state ev-in">
-                <span>状态</span><span>{{}}</span>
-            </div>
-            <div class="insurance-no ev-in">
-                <span>保单号</span><span>{{eventDetail.policy_no}}</span>
-            </div>
-            <div class="time ev-in">
-                <span>起止时间</span><span>{{eventDetail.start_date| moment('YYYY-MM-DD')}}至{{eventDetail.end_date | moment('YYYY-MM-DD')}}</span>
+            <div class="insu-con">
+                <div class="insurance ev-in">
+                    <span>险种</span><span>{{eventDetail.risk_name}}</span>
+                </div>
+                <div class="insurance-state ev-in">
+                    <span>状态</span><span>{{}}</span>
+                </div>
+                <div class="insurance-no ev-in">
+                    <span>保单号</span><span>{{eventDetail.policy_no}}</span>
+                </div>
+                <div class="time ev-in">
+                    <span>起止时间</span><span>{{eventDetail.start_date| moment('YYYY-MM-DD')}}至{{eventDetail.end_date | moment('YYYY-MM-DD')}}</span>
+                </div>
             </div>
         </div>
     </div>
@@ -112,7 +116,7 @@ import {postPolicyDetail} from '@/api/insurance.js'
         border-top: 2px solid #eee;
         background-color: #fff;
         .cost-content{
-            width: 680px;
+            width: 668px;
             height: 100%;
             margin: 0 auto;
             display: flex;
@@ -122,6 +126,12 @@ import {postPolicyDetail} from '@/api/insurance.js'
                 font-size: 30px;
                 color: #333;
             }
+        }
+        .insu{
+            width: 100%;
+            background-color: #fff;
+            margin-top: 20px;
+            
         }
     }
 }

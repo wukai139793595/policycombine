@@ -401,6 +401,7 @@ export default {
                     sessionStorage.removeItem('sessionSelectArr');
                     sessionStorage.removeItem('submitInfoObj');
                     sessionStorage.removeItem('groupId');
+                    sessionStorage.removeItem('groupInfo');
                     sessionStorage.removeItem('startTime');
                     sessionStorage.removeItem('endTime');
                     sessionStorage.removeItem('isSelectAll');
