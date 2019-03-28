@@ -8,6 +8,7 @@
 export default {
   name: 'App',
   created() {
+    document.domain = 'yunbisai.com';
     let historyLen = history.length;
     if ((window !== window.parent) && !sessionStorage.getItem('historyLen')) {
       sessionStorage.setItem('historyLen',historyLen);

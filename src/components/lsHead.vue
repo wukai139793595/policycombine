@@ -21,7 +21,16 @@ import {historyMemory} from '@/util/index.js'
         },
         methods: {
             turnBack (event) {
-                this.$router.go(-1);
+                if ((window !== window.parent) && this.goFirst) {
+                    var fatherDoc = window.parent.document;
+                    var oInsurance = fatherDoc.getElementById('insurance');
+                    var oSharebg = fatherDoc.getElementsByClassName('sharebg-active')[0];
+                    oInsurance.classList.remove('am-modal-active-right');
+                    fatherDoc.body.removeChild(oSharebg);
+                    console.log(oInsurance);                   
+                } else {
+                    this.$router.go(-1);
+                }
                 // var protocol = location.protocol || 'http:';
 
                 // var API_URL = (function () {

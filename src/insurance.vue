@@ -9,6 +9,7 @@
 export default {
   name: 'App',
   created () {
+    document.domain = 'yunbisai.com';
     if (this.$route.query.order_id) {
       sessionStorage.setItem('wxOrderId',this.$route.query.order_id);
     }
