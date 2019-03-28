@@ -34,7 +34,9 @@
                         :real_amount='item.real_amount'
                         :order_id='item.order_id'
                         :insured_id='item.insured_id'
+                        :apply_state='item.apply_state'
                         :policy_no='item.policy_no'
+                        :risk_name='item.risk_name'
                         
                         />
                 </div>            
@@ -106,11 +108,12 @@ import personInfo from '@/components/personInfo.vue'
 import Vue from 'vue'
 import {postQueryPolicy,postPolicyCancel} from '@/api/insurance.js'
 import {postInsuranceClassify} from '@/api/api.js'
-import {GetUrlParam,GetTheDateStr} from '@/util/index.js'
-
+import {GetUrlParam,GetTheDateStr,historyMemory} from '@/util/index.js'
+import kitUtils from '@/util/kitUtils.js'
 export default {
     data () {
         return {
+            OrderId: '',  //微信推送的order_id
             keywords:'',
             startDatePicker: this.beginDate(),  
             // endDatePicker:this.processDate(),
@@ -124,6 +127,7 @@ export default {
             totalPage: 0,
             state: '',    
             classifyValue: '', 
+
             // 设置不可选时间
 
             selectList: [
@@ -142,42 +146,42 @@ export default {
                 // false
             ],
             insuranceList: [
-                {
-                    "policy_holderd_name":"刘忠良",//投保人姓名
-                    "state":2,//保单状态 1为待投保,2为成功,3为退保,4为失败
-                    "title":"退费测试赛1",  //赛事名
-                    "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
-                    "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
-                    "real_amount":1000,  //应付金额，实际金额为 real_amount/100
-                    "insured_name":"方亮"
-                },
-                {
-                    "policy_holderd_name":"刘忠良",//投保人姓名
-                    "state":3,//保单状态 1为待投保,2为成功,3为退保,4为失败
-                    "title":"退费测试赛1",  //赛事名
-                    "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
-                    "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
-                    "real_amount":1000,  //应付金额，实际金额为 real_amount/100
-                    "insured_name":"方亮"
-                },
-                {
-                    "policy_holderd_name":"刘忠良",//投保人姓名
-                    "state":2,//保单状态 1为待投保,2为成功,3为退保,4为失败
-                    "title":"退费测试赛1",  //赛事名
-                    "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
-                    "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
-                    "real_amount":1000,  //应付金额，实际金额为 real_amount/100
-                    "insured_name":"方亮"
-                },
-                {
-                    "policy_holderd_name":"刘忠良",//投保人姓名
-                    "state":3,//保单状态 1为待投保,2为成功,3为退保,4为失败
-                    "title":"退费测试赛1",  //赛事名
-                    "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
-                    "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
-                    "real_amount":1000,  //应付金额，实际金额为 real_amount/100
-                    "insured_name":"方亮"
-                }
+                // {
+                //     "policy_holderd_name":"刘忠良",//投保人姓名
+                //     "state":2,//保单状态 1为待投保,2为成功,3为退保,4为失败
+                //     "title":"退费测试赛1",  //赛事名
+                //     "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
+                //     "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
+                //     "real_amount":1000,  //应付金额，实际金额为 real_amount/100
+                //     "insured_name":"方亮"
+                // },
+                // {
+                //     "policy_holderd_name":"刘忠良",//投保人姓名
+                //     "state":3,//保单状态 1为待投保,2为成功,3为退保,4为失败
+                //     "title":"退费测试赛1",  //赛事名
+                //     "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
+                //     "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
+                //     "real_amount":1000,  //应付金额，实际金额为 real_amount/100
+                //     "insured_name":"方亮"
+                // },
+                // {
+                //     "policy_holderd_name":"刘忠良",//投保人姓名
+                //     "state":2,//保单状态 1为待投保,2为成功,3为退保,4为失败
+                //     "title":"退费测试赛1",  //赛事名
+                //     "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
+                //     "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
+                //     "real_amount":1000,  //应付金额，实际金额为 real_amount/100
+                //     "insured_name":"方亮"
+                // },
+                // {
+                //     "policy_holderd_name":"刘忠良",//投保人姓名
+                //     "state":3,//保单状态 1为待投保,2为成功,3为退保,4为失败
+                //     "title":"退费测试赛1",  //赛事名
+                //     "start_date":"2019-02-16 00:00:00.000",  //保险开始时间
+                //     "end_date":"2019-02-17 00:00:00.000",  //保险结束时间
+                //     "real_amount":1000,  //应付金额，实际金额为 real_amount/100
+                //     "insured_name":"方亮"
+                // }
             ],
             "classifyList":[
             //         {
@@ -272,8 +276,10 @@ export default {
         // },
         getClassify () {
             postInsuranceClassify({
-                ssid: this.ssid
+                ssid: this.ssid,
+                order_id: this.orderId
             }).then(res => {
+                console.log(res)
                 if (res.data.errcode === 0) {
                     this.$nextTick(() => {
                         this.classifyList = res.data.list
@@ -299,7 +305,8 @@ export default {
                 limit: this.limit,
                 type: this.classifyValue,
                 keywords: this.keywords.trim(),
-                group_id: this.groupId || ""
+                group_id: this.groupId || "",
+                order_id: this.orderId
             })
             .then((res) => {
                 console.log(res)
@@ -393,7 +400,13 @@ export default {
         },
         //返回页面
         turnBack (event) {
+            historyMemory(1);
             this.$router.go(-1);
+        },
+        getWxOrderId () {
+            if (kitUtils.isWeChat() && sessionStorage.getItem('wxOrderId')) {
+                this.OrderId = sessionStorage.getItem('wxOrderId');
+            }
         }
     },
     created () {
@@ -401,6 +414,7 @@ export default {
         this.ssid = this.$cookie.get('ssid');
         // this.groupId = GetUrlParam("groupId").split('#')[0];
         this.groupId = sessionStorage.getItem('insuranceGroupId');
+        this.getWxOrderId();
         console.log(this.groupId)
         this.getClassify();
         this.initData();
@@ -417,14 +431,15 @@ export default {
         width: 750px;
         margin-left: auto;
         margin-right: auto;
-        height: 60px;
-        padding: 0 24px;
+        height: 80px;
+        padding: 20px 24px 0 24px;
         box-sizing: border-box;
         display: flex;
         justify-content: space-between;
-        margin-top: 20px;
+        // margin-top: 20px;
         margin-bottom: 30px;
         box-shadow: 4px 4px 10px #eee;
+        background-color: #fff;
         .turn-back{
             position: relative;
             top: 4px;
@@ -436,7 +451,7 @@ export default {
             }
         }
         .title{
-            font-size: 30px;
+            font-size: 36px;/*px*/
             color: #333;
         }
         .select{
@@ -447,7 +462,7 @@ export default {
                 vertical-align: middle;
             }
             span{
-                font-size: 30px;
+                font-size: 30px;/*px*/
                 color: #676767;
                 vertical-align: middle;
             }
@@ -477,7 +492,7 @@ export default {
             }
             .search-words{                
                 position: relative;
-                font-size: 28px; 
+                font-size: 28px; /*px*/
                 color: #666;
                 margin-left: 20px;
                 border: none;
@@ -591,7 +606,7 @@ export default {
             position: relative;
             .select-hint{
                 color: #333;
-                font-size: 30px; 
+                font-size: 30px;/*px*/
                 font-weight: bold;
                 text-indent: 40px;
             }
@@ -640,7 +655,7 @@ export default {
                 // }
             }
             .status-hint{
-                font-size: 30px; 
+                font-size: 30px;/*px*/ 
                 color: #333;
                 font-weight: bold;
                 text-indent: 40px;
@@ -656,7 +671,7 @@ export default {
                 div{
                     width: 120px;
                     height: 60px;
-                    font-size: 30px;
+                    font-size: 30px;/*px*/
                     color: #666;
                     background-color: #f4f4f4;
                     border-radius: 30px;
@@ -670,7 +685,7 @@ export default {
                 }
             }
             .classify-hint{
-                font-size: 30px; 
+                font-size: 30px;/*px*/ 
                 color: #333;
                 font-weight: bold;
                 text-indent: 40px;                
@@ -693,7 +708,7 @@ export default {
                 height: 100px;
                 line-height: 100px;
                 text-align: center;
-                font-size: 30px; 
+                font-size: 30px;/*px*/ 
             }
             .reset{
                 border-top: 2px solid #e5e5e5;
@@ -709,7 +724,7 @@ export default {
     }
     .noGroup{
         text-align: center;
-        font-size: 28px;
+        font-size: 28px;/*px*/
         color: #333;
         margin-top: 40px;
     }

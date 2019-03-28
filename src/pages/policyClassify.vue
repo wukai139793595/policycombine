@@ -59,6 +59,7 @@
 import lsHead from '@/components/lsHead.vue'
 import {mapState, mapMutations} from 'vuex'
 import {postInsuranceClassify} from '@/api/api.js'
+import {historyMemory} from '@/util/index.js'
 export default {
     data () {
         return {
@@ -141,7 +142,7 @@ export default {
         },
         // 选择保险种类
         selectPolicy (event, index) {
-            if (this.groupInfo.apply - this.groupInfo.policy < 3) {
+            if ((this.policyArr[index]['risk_code'] =='EAC')  && (this.groupInfo.apply - this.groupInfo.policy < 3)) {
                 this.$message('团体险不能少于3人');
                 return 
             }
@@ -188,12 +189,12 @@ export default {
 
         },
         turnBack (event) {
+            historyMemory(1);
             this.$router.go(-1);
         }
     },
     created() {
-        console.log("$router",this.$router);
-        console.log("$route",this.$route);
+
         this.ssid = this.$cookie.get('ssid');
         this.groupId = this.$route.query.groupId;
         this.groupInfo = JSON.parse(sessionStorage.getItem('groupInfo')) || null;
@@ -255,7 +256,7 @@ export default {
                 margin-bottom: 10px;
                 justify-content: space-between;
                 .name{
-                    font-size: 30px; 
+                    font-size: 30px;/*px*/ 
                     font-weight: 500;
                     color: #333;
                 }
@@ -272,7 +273,7 @@ export default {
                         }
                     }
                     span{
-                        font-size: 30px; 
+                        font-size: 30px;/*px*/ 
                         font-weight: 500;
                         color: #333;
                     }
@@ -282,7 +283,7 @@ export default {
                 width: 100%;
                 color: #999;
                 text-align: left;
-                font-size: 26px; 
+                font-size: 26px;/*px*/ 
                 .policy-duration{
                     margin-right: 20px;
                 }
@@ -320,7 +321,7 @@ export default {
             .protocols{
                 display: inline-block;
                 margin-left: 30px;
-                font-size: 28px;
+                font-size: 28px;/*px*/
                 letter-spacing: 4px;
                 span{
                     display: inline-block;
@@ -339,7 +340,7 @@ export default {
             line-height: 80px;
             border-radius: 40px;
             color: #fff;
-            font-size: 30px;
+            font-size: 30px;/*px*/
             font-weight: bold;
             letter-spacing: 8px;
         }
@@ -379,6 +380,7 @@ export default {
                 right: 10px;
                 left: 10px;
                 background-color: #fff;
+                overflow: scroll;
                 iframe{
                     width: 100%;
                     height: 100%;

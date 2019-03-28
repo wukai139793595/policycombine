@@ -33,45 +33,66 @@
 
 <script>
 import {postPolicyCancel} from '@/api/insurance.js'
+import {historyMemory} from '@/util/index.js'
     export default {
         props: {
+            //被保人姓名
             insured_name: {
                 type: String,
                 default: '' 
             },
+            //保单状态 1为待投保,2为成功,3为退保,4为失败
             state: {
                 type: String,
-                default: 0
+                default: ''
             },
+            //赛事名
             title: {
                 type: String,
                 defalut: ''
             },
+            //小组名
             groupname: {
                 type: String,
                 default: ''
             },
+            //保险开始时间
             start_date: {
                 type: String,
                 default: ''
             },
+             //保险结束时间
             end_date: {
                 type: String,
                 default: ''
             },
+            //实付金额，实际金额为 real_amount/100
             real_amount: {
                 type: String,
-                default: 0
+                default: ""
             },
+            //订单id
             order_id: {
                 type: String,
                 default: ''
             },
+            //被保人证件号
             insured_id: {
                 type: String,
                 default: ''
             },
+            //报名状态 2已报名 4已退费
+            apply_state:{
+                type: String,
+                default: ""
+            },
+            //保单号
             policy_no: {
+                type: String,
+                default: ''
+            },
+            //险种名
+            risk_name:{
                 type: String,
                 default: ''
             }
@@ -83,7 +104,16 @@ import {postPolicyCancel} from '@/api/insurance.js'
                     path: '/insuranceDetail',
                     query: {
                         insured_id: this.insured_id,
-                        policy_no: this.policy_no
+                        policy_no: this.policy_no,
+                        real_amount: this.real_amount,
+                        title: this.title,
+                        groupname: this.groupname,
+                        insured_name: this.insured_name,
+                        apply_state :this.apply_state,
+                        risk_name :this.risk_name,
+                        state :this.state,
+                        start_date :this.start_date,
+                        end_date :this.end_date
                     }
                 })
             },
@@ -176,12 +206,12 @@ import {postPolicyCancel} from '@/api/insurance.js'
         justify-content: space-between;
         margin-bottom: 26px;
         .name{
-            font-size: 30px; 
+            font-size: 30px;/*px*/ 
             font-weight: bold;
             color: #333;
         }
         .is-insurance{
-            font-size: 28px; 
+            font-size: 28px;/*px*/ 
             color: #999;
         }
     }
@@ -191,7 +221,7 @@ import {postPolicyCancel} from '@/api/insurance.js'
         background-color: #f6f6f6;
         // padding-left: 40px;
         padding: 20px 0 20px 40px;
-        font-size: 28px; 
+        font-size: 28px;/*px*/ 
         color: #666;
         margin-bottom: 30px;
 
@@ -201,11 +231,11 @@ import {postPolicyCancel} from '@/api/insurance.js'
     }
     .insurance-sum{
         span:nth-of-type(1){
-            font-size: 28px;
+            font-size: 28px;/*px*/
             color: #999;
         }
         span:nth-of-type(2) {
-            font-size: 28px;
+            font-size: 28px;/*px*/
             color: #333;
             font-weight: bold;
         }
@@ -218,7 +248,7 @@ import {postPolicyCancel} from '@/api/insurance.js'
         height: 50px;
         background-color: #fff;
         border-radius: 25px;
-        font-size: 30px;
+        font-size: 30px;/*px*/
         color: #000;
         text-align: center;
         line-height: 50px;
@@ -234,7 +264,7 @@ import {postPolicyCancel} from '@/api/insurance.js'
         height: 50px;
         background-color: #fff;
         border-radius: 25px;
-        font-size: 30px;
+        font-size: 30px;/*px*/
         color: #9a9a9a;
         text-align: center;
         line-height: 50px;

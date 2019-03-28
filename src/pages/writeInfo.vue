@@ -153,7 +153,7 @@
 </template>
 <script>
 import {postWallet, postCreateOrder, postPay,postCcbPay,postCcbPayAli,postCcbPayWx } from '@/api/api.js'
-import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr,Getsex} from '@/util/index.js'
+import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr,Getsex,historyMemory} from '@/util/index.js'
 import kitUtils from '@/util/kitUtils.js'
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
@@ -328,6 +328,7 @@ export default {
 
         },
         turnBack (event) {
+            historyMemory(1);
             this.$router.go(-1);
         },
         checkInfoCorrect () {   //校验用户填写的信息格式是否正确
@@ -563,7 +564,7 @@ export default {
     width: 100%;
     height: 100%;
     p{
-        font-size: 26px;
+        font-size: 26px;/*px*/
         color: #666;
     }
     input{
@@ -604,7 +605,7 @@ export default {
     // }
     .cue-words{
         padding: 10px 10px 0px 10px;
-        font-size: 24px;
+        font-size: 24px;/*px*/
         color: #3399ff;
         text-indent: 20px;
     }
@@ -612,9 +613,9 @@ export default {
         width: 702px;       
         margin: 30px auto 0 auto;
         p{
-            font-size: 30px;
+            font-size: 30px;/*px*/
             .policy-duration{
-                font-size: 26px;
+                font-size: 26px;/*px*/
                 color: #999;
                 margin-left: 8px;
             }
@@ -678,13 +679,13 @@ export default {
                 input{
                     text-indent: 20px;
                     padding-left: 0;
-                    font-size: 28px;
+                    font-size: 28px;/*px*/
                 }
                 .name{
                     display: inline-block;
                     width: 140px;
                     color: #333;
-                    font-size: 30px;
+                    font-size: 30px;/*px*/
                     margin-right: 20px;
                     font-weight: bold;
                     text-align: right;
@@ -705,7 +706,7 @@ export default {
         margin: 30px auto;
         span{
             margin-left: 30px;
-            font-size: 30px;
+            font-size: 30px;/*px*/
         }
     }
     .pay-way{
@@ -735,12 +736,12 @@ export default {
                         margin-left: 20px;
                         div{
                             margin-bottom: 10px;
-                            font-size: 30px; 
+                            font-size: 30px;/*px*/ 
                             color: #333;
                         }
                         .hint{
                             color: #666;
-                            font-size: 24px; 
+                            font-size: 24px;/*px*/ 
                         }
                     }
                 }
@@ -750,7 +751,7 @@ export default {
                     .to-recharge{
                         margin-right: 40px;
                         color: #3399ff;
-                        font-size: 24px;                        
+                        font-size: 24px;/*px*/                        
                     }
                 }
             }
@@ -762,13 +763,13 @@ export default {
                     .name-wrap{
                         margin-left: 20px;
                         .name{
-                            font-size: 30px; 
+                            font-size: 30px;/*px*/ 
                             color: #333;    
                                                
                         }
                         .bank-number{
                             color: #666;
-                            font-size: 24px;                             
+                            font-size: 24px;/*px*/                             
                         }
                     }                 
                 }
@@ -792,7 +793,7 @@ export default {
         line-height: 80px;
         border-radius: 40px;
         color: #666;
-        font-size: 30px;
+        font-size: 30px;/*px*/
         font-weight: bold;
         letter-spacing: 8px;
     }

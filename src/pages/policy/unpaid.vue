@@ -152,6 +152,7 @@
 <script>
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
+import {historyMemory} from '@/util/index.js'
 import {postCancelOrder,postCcbPay,postCcbPayAli,postCcbPayWx} from '@/api/api.js'
 import kitUtils from '@/util/kitUtils.js'
     export default {
@@ -256,6 +257,7 @@ import kitUtils from '@/util/kitUtils.js'
                             type: 'success',
                             message:'订单取消成功'
                         })
+                        historyMemory(1);
                         this.$router.go(-1);
                     } else {
                         this.$message.error(res.data.msg)
@@ -317,7 +319,6 @@ import kitUtils from '@/util/kitUtils.js'
         created () {
             this.ssid = this.$cookie.get('ssid');
             this.ccbType = kitUtils.isMobileBrowser() ? 2 : 16;
-            console.log(this.$router,this.$route)
             // 获取用户余额
             // postWallet({
             //     org_id: 32,
@@ -369,7 +370,7 @@ import kitUtils from '@/util/kitUtils.js'
     width: 100%;
     height: 100%;
     p{
-        font-size: 26px;
+        font-size: 26px;/*px*/
         color: #666;
     }
     input{
@@ -426,12 +427,12 @@ import kitUtils from '@/util/kitUtils.js'
                 text-align: center;
                 .el-input__inner{
                     text-align: center;
-                    font-size: 28px;
+                    font-size: 28px;/*px*/
                     background-color: #eee;
                 }
                 .el-input__inner::placeholder{
                     text-align: center;
-                    font-size: 28px;
+                    font-size: 28px;/*px*/
                 }
             }
             .striping{
@@ -466,13 +467,13 @@ import kitUtils from '@/util/kitUtils.js'
                 input{
                     text-indent: 20px;
                     padding-left: 0;
-                    font-size: 28px;
+                    font-size: 28px;/*px*/
                 }
                 .name{
                     display: inline-block;
                     width: 140px;
                     color: #333;
-                    font-size: 30px;
+                    font-size: 30px;/*px*/
                     margin-right: 20px;
                     font-weight: bold;
                     text-align: right;
@@ -493,7 +494,7 @@ import kitUtils from '@/util/kitUtils.js'
         margin: 30px auto;
         span{
             margin-left: 30px;
-            font-size: 30px;
+            font-size: 30px;/*px*/
         }
     }
     .pay-way{
@@ -523,12 +524,12 @@ import kitUtils from '@/util/kitUtils.js'
                         margin-left: 20px;
                         div{
                             margin-bottom: 10px;
-                            font-size: 30px; 
+                            font-size: 30px;/*px*/ 
                             color: #333;
                         }
                         .hint{
                             color: #666;
-                            font-size: 24px; 
+                            font-size: 24px;/*px*/ 
                         }
                     }
                 }
@@ -538,7 +539,7 @@ import kitUtils from '@/util/kitUtils.js'
                     .to-recharge{
                         margin-right: 40px;
                         color: #3399ff;
-                        font-size: 24px;                        
+                        font-size: 24px;/*px*/                        
                     }
                 }
             }
@@ -550,13 +551,13 @@ import kitUtils from '@/util/kitUtils.js'
                     .name-wrap{
                         margin-left: 20px;
                         .name{
-                            font-size: 30px; 
+                            font-size: 30px;/*px*/ 
                             color: #333;    
                                                
                         }
                         .bank-number{
                             color: #666;
-                            font-size: 24px;                             
+                            font-size: 24px;/*px*/                             
                         }
                     }                 
                 }
@@ -576,7 +577,7 @@ import kitUtils from '@/util/kitUtils.js'
             height: 80px;
             text-align: center;
             line-height: 80px;
-            font-size: 30px;
+            font-size: 30px;/*px*/
             font-weight: bold;
             letter-spacing: 8px;   
             background-color: orange;         
@@ -586,7 +587,7 @@ import kitUtils from '@/util/kitUtils.js'
             height: 80px;
             text-align: center;
             line-height: 80px;
-            font-size: 30px;
+            font-size: 30px;/*px*/
             font-weight: bold;
             letter-spacing: 8px;
             color: #fff;

@@ -289,3 +289,11 @@ export function NewCheckIdCard(idcard){
   　　} 
   
   } 
+
+export function historyMemory (num) {
+  if ((window !== window.parent) && sessionStorage.getItem('historyLen')) {
+    let len = Number(sessionStorage.getItem('historyLen'));
+    sessionStorage.setItem('historyLen', len + num);
+    console.log('calchistorylen:',len + num);
+  }  
+}

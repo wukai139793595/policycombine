@@ -7,6 +7,7 @@
     </div>
 </template>
 <script>
+import {historyMemory} from '@/util/index.js'
     export default {
         props: {
             headName: {
@@ -21,6 +22,32 @@
         methods: {
             turnBack (event) {
                 this.$router.go(-1);
+                // var protocol = location.protocol || 'http:';
+
+                // var API_URL = (function () {
+                //     if (/^dev-/.test(location.hostname)) {
+                //         return protocol + "//dev-"
+                //     } else if(/^test-/.test(location.hostname)){
+                //         return protocol + "//test-"
+                //     } else {
+                //         return protocol + "//"
+                //     }
+                // }())
+                // if (window === window.parent) {
+                //     this.$router.go(-1);
+                // } else {
+                //     if (this.goFirst) {
+                //         let nowLen = history.length ;
+                //         let historyLen = Number(sessionStorage.getItem('historyLen'));
+                //         console.log('nowLen',nowLen)
+                //         console.log('go',(historyLen-nowLen))
+                //         sessionStorage.removeItem('historyLen');
+                //         history.go(historyLen-nowLen);
+                //     } else {
+                //         historyMemory(1);
+                //         this.$router.go(-1);
+                //     }
+                // }
             }
         }
         
@@ -63,7 +90,7 @@
         }
         .title{
             display: inline-block;
-            font-size: 30px;
+            font-size: 36px;/*px*/
         }
     }
 </style>

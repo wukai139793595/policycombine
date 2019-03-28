@@ -161,7 +161,7 @@
     }
     .code{
         text-align: center;
-        font-size: 38px; 
+        font-size: 38px;/*px*/ 
         margin-bottom: 40px;
     }
     .canvas-wrap{

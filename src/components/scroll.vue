@@ -256,7 +256,7 @@
   }
 
   .icon {
-    font-size: 24px;
+    font-size: 26px;/*px*/
     margin-right: 5px;
     color: #333;
   }

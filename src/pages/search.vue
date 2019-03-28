@@ -32,6 +32,7 @@
 import personInfo from '@/components/personInfo.vue'
 import Scroll from '@/components/scroll.vue'
 import {postQueryPolicy} from '@/api/insurance.js'
+import {historyMemory} from '@/util/index.js'
 export default {
     data () {
         return {
@@ -110,6 +111,7 @@ export default {
             }
         },
         toInsurance(event) {
+            historyMemory(1);
             this.$router.go(-1);
         },
         changeState (index) {
@@ -156,17 +158,17 @@ export default {
                 outline: none;
                 margin-left: 20px;
                 line-height: 50px;
-                font-size: 24px; 
+                font-size: 24px;/*px*/ 
 
             }
             input::placeholder{
                 color: #999;
-                font-size: 24px; 
+                font-size: 24px;/*px*/ 
             }
         }
         .cancel{
             color: #3399ff;
-            font-size: 26px;
+            font-size: 26px;/*px*/
         }
     }
     .scroll-container{

@@ -6,7 +6,14 @@
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    let historyLen = history.length;
+    if ((window !== window.parent) && !sessionStorage.getItem('historyLen')) {
+      sessionStorage.setItem('historyLen',historyLen);
+      console.log('appcreatedlen:',historyLen)
+    }
+  }
 }
 </script>
 

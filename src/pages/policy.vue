@@ -41,7 +41,7 @@
 import lsHead from '@/components/lsHead.vue'
 import Scroll from '@/components/scroll.vue'
 import {postGroup, postCheckOrder} from '@/api/api.js'
-import {changeLocationReplace} from '@/util/index.js'
+import {changeLocationReplace,historyMomery} from '@/util/index.js'
 export default {
     data () {
         return {
@@ -52,20 +52,20 @@ export default {
             totalPage: 1, //总页数
             isClock: false, //网络请求锁 
             groupArr:[
-                {
-                "event_group_id":"20058", //小组id
-                "groupname":"I",  //小组名
-                "ROW_NUMBER":"1",
-                "apply":3,  //报名人数
-                "policy":1  //已保险人数
-                },
-                {
-                "event_group_id":"20059",
-                "groupname":"甲组",
-                "ROW_NUMBER":"2",
-                "apply":0,
-                "policy":0
-                }
+                // {
+                // "event_group_id":"20058", //小组id
+                // "groupname":"I",  //小组名
+                // "ROW_NUMBER":"1",
+                // "apply":3,  //报名人数
+                // "policy":1  //已保险人数
+                // },
+                // {
+                // "event_group_id":"20059",
+                // "groupname":"甲组",
+                // "ROW_NUMBER":"2",
+                // "apply":0,
+                // "policy":0
+                // }
            ]
         }
     },
@@ -126,6 +126,7 @@ export default {
                     sessionStorage.removeItem('endTime');
                     sessionStorage.removeItem('isSelectAll');
                     sessionStorage.removeItem('selectedPolicy');
+                    this.$store.commit('changeUser',[]);
                 }
             } else {
                 sessionStorage.setItem('groupId', groupId);
@@ -207,8 +208,6 @@ export default {
         if (this.$route.query.event_id) {
             this.eventID = this.$route.query.event_id;
         }
-        console.log("$router",this.$router);
-        console.log("$route",this.$route);
         console.log(this.eventID)
         this.ssid = this.$cookie.get('ssid');
         this.initData();
@@ -241,12 +240,13 @@ export default {
                 border-bottom: 2px solid #eee;
                 .name-wrap{
                     text-align: left;
+                    flex: 1;
                     .group-name{
                         color: #333;
-                        font-size: 30px; 
+                        font-size: 30px;/*px*/ 
                     }
                     .group-info{
-                        font-size: 28px; 
+                        font-size: 28px;/*px*/ 
                         span{
                             color: #999;
                         }
@@ -265,13 +265,13 @@ export default {
                         display: inline-block;
                         line-height: 40px;
                         text-align: center;
-                        font-size: 26px;
+                        font-size: 26px;/*px*/
                     }
                     .buy-btn{
                         width: 100px;
                         height: 40px;
                         line-height: 40px;
-                        font-size: 28px;
+                        font-size: 28px;/*px*/
                         background-color: #3399ff;
                         color: #fff;
                         font-weight: bold;
@@ -286,7 +286,7 @@ export default {
     }
     .noGroup{
         text-align: center;
-        font-size: 28px;
+        font-size: 28px;/*px*/
         color: #333;
         margin-top: 40px;
     }
