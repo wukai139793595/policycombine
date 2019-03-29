@@ -52,7 +52,6 @@
 import {postNoPolicyPerson} from '@/api/api.js'
 import Scroll from '@/components/scroll.vue'
 import lsHead from '@/components/lsHead.vue'
-import {historyMemory} from '@/util/index.js'
 export default {
     data () {
         return {
@@ -266,7 +265,6 @@ export default {
         },
         turnBack (event) {
             this.$store.commit('changeUser',[]);
-            historyMemory(1);
             this.$router.go(-1);
         },
         hasSelect (value) {

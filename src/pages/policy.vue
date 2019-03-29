@@ -117,6 +117,11 @@ export default {
             var groupId = this.groupArr[index].event_group_id;
             var startTime = this.groupArr[index].begintime;
             var endTime = this.groupArr[index].endtime;
+
+            if (new Date(startTime).getTime() < Date.now()) {
+                this.$message('比赛已经开始，不能购买保险');
+                return 
+            }
             if (sessionStorage.getItem('groupId')) {
                 if (sessionStorage.getItem('groupId') != groupId) {
                     sessionStorage.setItem('groupId', groupId);

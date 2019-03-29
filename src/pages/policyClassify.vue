@@ -49,7 +49,7 @@
                     <img src="@/assets/icon/close.png" alt="" @click="hideProtocols($event)">
                 </div>
                 <div class="word-wrap">
-                    <iframe src="https://g.yunbisai.com/file/ins.html" frameborder="0"></iframe>
+                    <iframe src="https://g.yunbisai.com/file/ins.html" frameborder="0" scrolling="yes"></iframe>
                 </div>
             </div>
         </div>
@@ -59,7 +59,6 @@
 import lsHead from '@/components/lsHead.vue'
 import {mapState, mapMutations} from 'vuex'
 import {postInsuranceClassify} from '@/api/api.js'
-import {historyMemory} from '@/util/index.js'
 export default {
     data () {
         return {
@@ -121,6 +120,9 @@ export default {
     methods: {
         // ...mapMutations(['changeMoney']) ,
         // 获取保险种类信息
+        protocolsDetail (event) {
+
+        },
         getInfo () {
             postInsuranceClassify({
                 ssid: this.ssid
@@ -189,7 +191,6 @@ export default {
 
         },
         turnBack (event) {
-            historyMemory(1);
             this.$router.go(-1);
         }
     },
@@ -380,10 +381,11 @@ export default {
                 right: 10px;
                 left: 10px;
                 background-color: #fff;
-                overflow: scroll;
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
                 iframe{
                     width: 100%;
-                    height: 100%;
+                    height: 99%;
                     box-shadow: 0 0 6px #aaa;
                 }
             }

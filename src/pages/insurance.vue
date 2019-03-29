@@ -106,9 +106,8 @@
 import Scroll from '@/components/scroll.vue'
 import personInfo from '@/components/personInfo.vue'
 import Vue from 'vue'
-import {postQueryPolicy,postPolicyCancel} from '@/api/insurance.js'
-import {postInsuranceClassify} from '@/api/api.js'
-import {GetUrlParam,GetTheDateStr,historyMemory} from '@/util/index.js'
+import {postQueryPolicy,postPolicyCancel,postInsuranceClassify} from '@/api/api.js'
+import {GetUrlParam,GetTheDateStr} from '@/util/index.js'
 import kitUtils from '@/util/kitUtils.js'
 export default {
     data () {
@@ -400,7 +399,6 @@ export default {
         },
         //返回页面
         turnBack (event) {
-            historyMemory(1);
             this.$router.go(-1);
         },
         getWxOrderId () {

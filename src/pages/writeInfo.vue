@@ -13,7 +13,7 @@
                     <!-- :placeholder="gameStartTime|moment('YYYY-MM-DD')" -->
                     <!-- :placeholder="gameStartTime|moment('YYYY-MM-DD')" -->
         <div class="set-time">
-            <p>请设置保险起止时间:<span class="policy-duration">该保险险期{{selectedPolicy.periodmin}}-{{selectedPolicy.periodmax}}</span></p>
+            <p>请设置保险起止时间:<span class="policy-duration">该保险险期{{selectedPolicy.periodmin}}-{{selectedPolicy.periodmax}}天</span></p>
             <div class="time-wrap">
                 <el-date-picker
                     @change="infoChange($event, 'startTime')"
@@ -153,7 +153,7 @@
 </template>
 <script>
 import {postWallet, postCreateOrder, postPay,postCcbPay,postCcbPayAli,postCcbPayWx } from '@/api/api.js'
-import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr,Getsex,historyMemory} from '@/util/index.js'
+import {checkName,checkPhone,checkEmail,checkIdcard,API_URL,GetDateStr,GetTheDateStr,Getsex} from '@/util/index.js'
 import kitUtils from '@/util/kitUtils.js'
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
@@ -328,7 +328,6 @@ export default {
 
         },
         turnBack (event) {
-            historyMemory(1);
             this.$router.go(-1);
         },
         checkInfoCorrect () {   //校验用户填写的信息格式是否正确

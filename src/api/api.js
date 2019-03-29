@@ -1,17 +1,15 @@
 import axios from 'axios'
 import Qs from 'qs'
+import {API_URL} from '@/util/index.js'
 axios.defaults.withCredentials = true;
-const API_URL = (function () {
-    // 返回请求头，如http://dev等
-    if (/^dev-/.test(location.host) || /^localhost/.test(location.host)) {
-        return '//dev-'
-    } else if (/^test-/.test(location.host)) {
-        return '//test-'
-    } else {
-        return '//'
-    }
-})()
 
+function toLogin() {
+    if (window !== window.parent) {
+        window.parent.location.href = API_URL + 'www.yunbisai.com/login';
+    } else {
+        window.location.href = API_URL + 'm.yunbisai.com/login';
+    }
+}
 if (location.host === '192.168.2.81:3001' ) {  
     // 测试环境的请求地址
     const PROCOTOL_HEAD = 'http://192.168.2.81:3001'
@@ -44,12 +42,14 @@ if (location.host === '192.168.2.81:3001' ) {
                 url: API_URL+'open.yunbisai.com'+url,
                 data: Qs.stringify(params),
                 header: {
-                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                    'Cookie': 'e9hbliskas76gss1oh24l2hui4'
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                 },
                 timeout: 5e3,
                 withCredentials: true
             }).then(res => {
+                if (res.data && (res.data.errcode === 255)) {
+                    toLogin();
+                }
                 resolve(res);
             }).catch(err => {
                 reject(err);
@@ -64,12 +64,14 @@ if (location.host === '192.168.2.81:3001' ) {
                 url: API_URL+'api.yunbisai.com'+url,
                 data: Qs.stringify(params),
                 header: {
-                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-                    'Cookie': 'e9hbliskas76gss1oh24l2hui4'
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
                 },
                 timeout: 3e3,
                 withCredentials: true
             }).then(res => {
+                if (res.data && (res.data.errcode === 255)) {
+                    toLogin();
+                }
                 resolve(res);
             }).catch(err => {
                 reject(err);
@@ -80,8 +82,12 @@ if (location.host === '192.168.2.81:3001' ) {
     var getApi = function (url, params) {
         return new Promise((resolve, reject) => {
             axios.get(API_URL+'api.yunbisai.com'+url, {
-                params: params
-            }).then(res => {
+                params
+            })
+            .then(res => {
+                if (res.data && (res.data.errcode === 255)) {
+                    toLogin();
+                }
                 resolve(res);
             }).catch(err => {
                 reject(err);
@@ -116,3 +122,9 @@ export const postCcbPayWx = (params) => {return postApi('/pay/wx', params)}
 //付款订单轮询 
 export const postPolling = (params) => {return getApi('/pollingPay/Index/index', params)}
 
+//获取保单信息
+export const postQueryPolicy = (params) => {return post('/index/index/getPolicy',params)};
+//退保
+export const postPolicyCancel = (params) => {return post('/index/index/policyCancell', params)}
+//查询保单详情
+export const postPolicyDetail = (params) => {return post('/index/Policy/policyDetail', params)}

@@ -297,3 +297,20 @@ export function historyMemory (num) {
     console.log('calchistorylen:',len + num);
   }  
 }
+
+export const API_URL = (function () {
+  var temp = '';
+  temp = location.protocol || 'http:';
+  if (/^dev-/.test(location.hostname) || /^localhost/.test(location.hostname)) {
+    temp += '//dev-'
+  } else if (/^test-/.test(location.hostname)) {
+    temp += '//test-'
+  } else {
+    temp += '//'
+  }   
+  return temp;
+}())
+
+
+
+

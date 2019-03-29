@@ -51,7 +51,7 @@
 
 <script>
 import lsHead from '@/components/lsHead.vue'
-import {postPolicyDetail} from '@/api/insurance.js'
+import {postPolicyDetail} from '@/api/api.js'
     export default {
         data () {
             return {

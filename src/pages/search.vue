@@ -31,8 +31,7 @@
 <script>
 import personInfo from '@/components/personInfo.vue'
 import Scroll from '@/components/scroll.vue'
-import {postQueryPolicy} from '@/api/insurance.js'
-import {historyMemory} from '@/util/index.js'
+import {postQueryPolicy} from '@/api/api.js'
 export default {
     data () {
         return {
@@ -111,7 +110,6 @@ export default {
             }
         },
         toInsurance(event) {
-            historyMemory(1);
             this.$router.go(-1);
         },
         changeState (index) {

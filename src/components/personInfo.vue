@@ -32,8 +32,7 @@
 </template>
 
 <script>
-import {postPolicyCancel} from '@/api/insurance.js'
-import {historyMemory} from '@/util/index.js'
+import {postPolicyCancel} from '@/api/api.js'
     export default {
         props: {
             //被保人姓名

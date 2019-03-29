@@ -7,7 +7,6 @@
     </div>
 </template>
 <script>
-import {historyMemory} from '@/util/index.js'
     export default {
         props: {
             headName: {

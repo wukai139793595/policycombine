@@ -152,7 +152,6 @@
 <script>
 import qrCode from '@/components/qrCode.vue'
 import lsHead from '@/components/lsHead.vue'
-import {historyMemory} from '@/util/index.js'
 import {postCancelOrder,postCcbPay,postCcbPayAli,postCcbPayWx} from '@/api/api.js'
 import kitUtils from '@/util/kitUtils.js'
     export default {
@@ -257,7 +256,6 @@ import kitUtils from '@/util/kitUtils.js'
                             type: 'success',
                             message:'订单取消成功'
                         })
-                        historyMemory(1);
                         this.$router.go(-1);
                     } else {
                         this.$message.error(res.data.msg)
